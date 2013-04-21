@@ -23,269 +23,260 @@ import com.saasovation.common.domain.model.DomainEventSubscriber;
 
 public class ForumTest extends AbstractForumTest {
 
-    protected Discussion discussion;
-    protected DiscussionId discussionId;
-    protected Forum forum;
-    protected ForumId forumId;
-    protected Post post;
-    protected Post postAgain;
-    protected PostId postId;
-    protected String subject;
-    protected Tenant tenant;
+	protected Discussion discussion;
+	protected DiscussionId discussionId;
+	protected Forum forum;
+	protected ForumId forumId;
+	protected Post post;
+	protected Post postAgain;
+	protected PostId postId;
+	protected String subject;
+	protected Tenant tenant;
 
-    public ForumTest() {
-        super();
-    }
+	public ForumTest() {
+		super();
+	}
 
-    public void testCreateForum() throws Exception {
+	public void testCreateForum() throws Exception {
 
-        forum = this.forumAggregate();
+		forum = this.forumAggregate();
 
-        assertNotNull(forum.tenant());
-        assertNotNull(forum.tenant().id());
-        assertEquals(8, forum.tenant().id().length());
-        assertEquals("jdoe", forum.creator().identity());
-        assertEquals("jdoe@saasovation.com", forum.moderator().emailAddress());
-        assertTrue(forum.isModeratedBy(forum.moderator()));
-        assertEquals("John Doe Does DDD", forum.subject());
-        assertEquals("A set of discussions about DDD for anonymous developers.", forum.description());
+		assertNotNull(forum.tenant());
+		assertNotNull(forum.tenant().id());
+		assertEquals(8, forum.tenant().id().length());
+		assertEquals("jdoe", forum.creator().identity());
+		assertEquals("jdoe@saasovation.com", forum.moderator().emailAddress());
+		assertTrue(forum.isModeratedBy(forum.moderator()));
+		assertEquals("John Doe Does DDD", forum.subject());
+		assertEquals("A set of discussions about DDD for anonymous developers.", forum.description());
 
-        DomainRegistry.forumRepository().save(forum);
+		DomainRegistry.forumRepository().save(forum);
 
-        expectedEvents(1);
-        expectedEvent(ForumStarted.class);
+		expectedEvents(1);
+		expectedEvent(ForumStarted.class);
 
-        expectedNotifications(1);
-        expectedNotification(ForumStarted.class);
-    }
+		expectedNotifications(1);
+		expectedNotification(ForumStarted.class);
+	}
 
-    public void testAssignModerator() throws Exception {
+	public void testAssignModerator() throws Exception {
 
-        forum = this.forumAggregate();
+		forum = this.forumAggregate();
 
-        forum.assignModerator(new Moderator("zdoe", "Zoe Doe", "zdoe@saasovation.com"));
+		forum.assignModerator(new Moderator("zdoe", "Zoe Doe", "zdoe@saasovation.com"));
 
-        assertEquals("zdoe", forum.moderator().identity());
-        assertEquals("zdoe@saasovation.com", forum.moderator().emailAddress());
+		assertEquals("zdoe", forum.moderator().identity());
+		assertEquals("zdoe@saasovation.com", forum.moderator().emailAddress());
 
-        DomainRegistry.forumRepository().save(forum);
+		DomainRegistry.forumRepository().save(forum);
 
-        expectedEvents(2);
-        expectedEvent(ForumStarted.class);
-        expectedEvent(ForumModeratorChanged.class);
+		expectedEvents(2);
+		expectedEvent(ForumStarted.class);
+		expectedEvent(ForumModeratorChanged.class);
 
-        expectedNotifications(2);
-        expectedNotification(ForumStarted.class);
-        expectedNotification(ForumModeratorChanged.class);
-    }
+		expectedNotifications(2);
+		expectedNotification(ForumStarted.class);
+		expectedNotification(ForumModeratorChanged.class);
+	}
 
-    public void testChangeDescription() throws Exception {
+	public void testChangeDescription() throws Exception {
 
-        forum = this.forumAggregate();
+		forum = this.forumAggregate();
 
-        forum.changeDescription("And Zoe knows...");
+		forum.changeDescription("And Zoe knows...");
 
-        assertEquals("And Zoe knows...", forum.description());
+		assertEquals("And Zoe knows...", forum.description());
 
-        DomainRegistry.forumRepository().save(forum);
+		DomainRegistry.forumRepository().save(forum);
 
-        expectedEvents(2);
-        expectedEvent(ForumStarted.class);
-        expectedEvent(ForumDescriptionChanged.class);
+		expectedEvents(2);
+		expectedEvent(ForumStarted.class);
+		expectedEvent(ForumDescriptionChanged.class);
 
-        expectedNotifications(2);
-        expectedNotification(ForumStarted.class);
-        expectedNotification(ForumDescriptionChanged.class);
-    }
+		expectedNotifications(2);
+		expectedNotification(ForumStarted.class);
+		expectedNotification(ForumDescriptionChanged.class);
+	}
 
-    public void testChangeSubject() throws Exception {
+	public void testChangeSubject() throws Exception {
 
-        forum = this.forumAggregate();
+		forum = this.forumAggregate();
 
-        forum.changeSubject("Zoe Likes DDD");
+		forum.changeSubject("Zoe Likes DDD");
 
-        assertEquals("Zoe Likes DDD", forum.subject());
+		assertEquals("Zoe Likes DDD", forum.subject());
 
-        DomainRegistry.forumRepository().save(forum);
+		DomainRegistry.forumRepository().save(forum);
 
-        expectedEvents(2);
-        expectedEvent(ForumStarted.class);
-        expectedEvent(ForumSubjectChanged.class);
+		expectedEvents(2);
+		expectedEvent(ForumStarted.class);
+		expectedEvent(ForumSubjectChanged.class);
 
-        expectedNotifications(2);
-        expectedNotification(ForumStarted.class);
-        expectedNotification(ForumSubjectChanged.class);
-    }
+		expectedNotifications(2);
+		expectedNotification(ForumStarted.class);
+		expectedNotification(ForumSubjectChanged.class);
+	}
 
-    public void testClose() throws Exception {
+	public void testClose() throws Exception {
 
-        forum = this.forumAggregate();
+		forum = this.forumAggregate();
 
-        forum.close();
+		forum.close();
 
-        assertTrue(forum.isClosed());
+		assertTrue(forum.isClosed());
 
-        boolean failed = false;
+		boolean failed = false;
 
-        try {
-            forum.changeDescription("Blah...");
+		try {
+			forum.changeDescription("Blah...");
 
-            fail("Should have thrown exception.");
+			fail("Should have thrown exception.");
 
-        } catch (Exception e) {
-            failed = true;
-        }
+		} catch (Exception e) {
+			failed = true;
+		}
 
-        assertTrue(failed);
+		assertTrue(failed);
 
-        DomainRegistry.forumRepository().save(forum);
+		DomainRegistry.forumRepository().save(forum);
 
-        expectedEvents(2);
-        expectedEvent(ForumStarted.class);
-        expectedEvent(ForumClosed.class);
+		expectedEvents(2);
+		expectedEvent(ForumStarted.class);
+		expectedEvent(ForumClosed.class);
 
-        expectedNotifications(2);
-        expectedNotification(ForumStarted.class);
-        expectedNotification(ForumClosed.class);
-    }
+		expectedNotifications(2);
+		expectedNotification(ForumStarted.class);
+		expectedNotification(ForumClosed.class);
+	}
 
-    public void testReopen() throws Exception {
+	public void testReopen() throws Exception {
 
-        forum = this.forumAggregate();
+		forum = this.forumAggregate();
 
-        forum.close();
+		forum.close();
 
-        assertTrue(forum.isClosed());
+		assertTrue(forum.isClosed());
 
-        forum.reopen();
+		forum.reopen();
 
-        assertFalse(forum.isClosed());
+		assertFalse(forum.isClosed());
 
-        try {
-            forum.changeDescription("Blah...");
+		try {
+			forum.changeDescription("Blah...");
 
-        } catch (Exception e) {
-            fail("Should have succeeded.");
-        }
+		} catch (Exception e) {
+			fail("Should have succeeded.");
+		}
 
-        assertEquals("Blah...", forum.description());
+		assertEquals("Blah...", forum.description());
 
-        DomainRegistry.forumRepository().save(forum);
+		DomainRegistry.forumRepository().save(forum);
 
-        expectedEvents(4);
-        expectedEvent(ForumStarted.class);
-        expectedEvent(ForumClosed.class);
-        expectedEvent(ForumReopened.class);
-        expectedEvent(ForumDescriptionChanged.class);
+		expectedEvents(4);
+		expectedEvent(ForumStarted.class);
+		expectedEvent(ForumClosed.class);
+		expectedEvent(ForumReopened.class);
+		expectedEvent(ForumDescriptionChanged.class);
 
-        expectedNotifications(4);
-        expectedNotification(ForumStarted.class);
-        expectedNotification(ForumClosed.class);
-        expectedNotification(ForumReopened.class);
-        expectedNotification(ForumDescriptionChanged.class);
-    }
+		expectedNotifications(4);
+		expectedNotification(ForumStarted.class);
+		expectedNotification(ForumClosed.class);
+		expectedNotification(ForumReopened.class);
+		expectedNotification(ForumDescriptionChanged.class);
+	}
 
-    public void testStartDiscussion() throws Exception {
+	public void testStartDiscussion() throws Exception {
 
-        forum = this.forumAggregate();
+		forum = this.forumAggregate();
 
-        DomainRegistry.forumRepository().save(forum);
+		DomainRegistry.forumRepository().save(forum);
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<DiscussionStarted>() {
-                public void handleEvent(DiscussionStarted aDomainEvent) {
-                    tenant = aDomainEvent.tenant();
-                    forumId = aDomainEvent.forumId();
-                    discussionId = aDomainEvent.discussionId();
-                    subject = aDomainEvent.subject();
-                }
-                public Class<DiscussionStarted> subscribedToEventType() {
-                    return DiscussionStarted.class;
-                }
-            });
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<DiscussionStarted>() {
+			@Override
+			public void handleEvent(DiscussionStarted aDomainEvent) {
+				tenant = aDomainEvent.tenant();
+				forumId = aDomainEvent.forumId();
+				discussionId = aDomainEvent.discussionId();
+				subject = aDomainEvent.subject();
+			}
 
-        discussion = forum.startDiscussion(
-                DomainRegistry.forumIdentityService(),
-                new Author("jdoe", "John Doe", "jdoe@saasovation.com"),
-                "All About DDD");
+			@Override
+			public Class<DiscussionStarted> subscribedToEventType() {
+				return DiscussionStarted.class;
+			}
+		});
 
-        DomainRegistry.discussionRepository().save(discussion);
+		discussion = forum.startDiscussion(DomainRegistry.forumIdentityService(), new Author("jdoe", "John Doe", "jdoe@saasovation.com"),
+				"All About DDD");
 
-        assertNotNull(tenant);
-        assertEquals(tenant, forum.tenant());
-        assertNotNull(forumId);
-        assertEquals(forumId, forum.forumId());
-        assertNotNull(discussionId);
-        assertNotNull(discussion);
-        assertEquals(discussionId, discussion.discussionId());
-        assertEquals("jdoe", discussion.author().identity());
-        assertNotNull(subject);
+		DomainRegistry.discussionRepository().save(discussion);
 
-        expectedEvents(2);
-        expectedEvent(ForumStarted.class);
-        expectedEvent(DiscussionStarted.class);
+		assertNotNull(tenant);
+		assertEquals(tenant, forum.tenant());
+		assertNotNull(forumId);
+		assertEquals(forumId, forum.forumId());
+		assertNotNull(discussionId);
+		assertNotNull(discussion);
+		assertEquals(discussionId, discussion.discussionId());
+		assertEquals("jdoe", discussion.author().identity());
+		assertNotNull(subject);
 
-        expectedNotifications(2);
-        expectedNotification(ForumStarted.class);
-        expectedNotification(DiscussionStarted.class);
-    }
+		expectedEvents(2);
+		expectedEvent(ForumStarted.class);
+		expectedEvent(DiscussionStarted.class);
 
-    public void testModeratedPostContent() throws Exception {
+		expectedNotifications(2);
+		expectedNotification(ForumStarted.class);
+		expectedNotification(DiscussionStarted.class);
+	}
 
-        forum = this.forumAggregate();
+	public void testModeratedPostContent() throws Exception {
 
-        DomainRegistry.forumRepository().save(forum);
+		forum = this.forumAggregate();
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<DiscussionStarted>() {
-                public void handleEvent(DiscussionStarted aDomainEvent) {
-                    discussionId = aDomainEvent.discussionId();
-                }
-                public Class<DiscussionStarted> subscribedToEventType() {
-                    return DiscussionStarted.class;
-                }
-            });
+		DomainRegistry.forumRepository().save(forum);
 
-        discussion = forum.startDiscussion(
-                DomainRegistry.forumIdentityService(),
-                new Author("jdoe", "John Doe", "jdoe@saasovation.com"),
-                "All About DDD");
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<DiscussionStarted>() {
+			@Override
+			public void handleEvent(DiscussionStarted aDomainEvent) {
+				discussionId = aDomainEvent.discussionId();
+			}
 
-        DomainRegistry.discussionRepository().save(discussion);
+			@Override
+			public Class<DiscussionStarted> subscribedToEventType() {
+				return DiscussionStarted.class;
+			}
+		});
 
-        post = discussion.post(
-                DomainRegistry.forumIdentityService(),
-                new Author("jdoe", "John Doe", "jdoe@saasovation.com"),
-                "Subject",
-                "Body text.");
+		discussion = forum.startDiscussion(DomainRegistry.forumIdentityService(), new Author("jdoe", "John Doe", "jdoe@saasovation.com"),
+				"All About DDD");
 
-        DomainRegistry.postRepository().save(post);
+		DomainRegistry.discussionRepository().save(discussion);
 
-        post = DomainRegistry.postRepository().postOfId(post.tenant(), post.postId());
+		post = discussion.post(DomainRegistry.forumIdentityService(), new Author("jdoe", "John Doe", "jdoe@saasovation.com"), "Subject",
+				"Body text.");
 
-        forum.moderatePost(
-                post,
-                forum.moderator(),
-                "MODERATED: Subject",
-                "MODERATED: Body text.");
+		DomainRegistry.postRepository().save(post);
 
-        DomainRegistry.postRepository().save(post);
+		post = DomainRegistry.postRepository().postOfId(post.tenant(), post.postId());
 
-        assertTrue(post.subject().startsWith("MODERATED: "));
-        assertTrue(post.bodyText().startsWith("MODERATED: "));
+		forum.moderatePost(post, forum.moderator(), "MODERATED: Subject", "MODERATED: Body text.");
 
-        expectedEvents(4);
-        expectedEvent(ForumStarted.class);
-        expectedEvent(DiscussionStarted.class);
-        expectedEvent(PostedToDiscussion.class);
-        expectedEvent(PostContentAltered.class);
+		DomainRegistry.postRepository().save(post);
 
-        expectedNotifications(4);
-        expectedNotification(ForumStarted.class);
-        expectedNotification(DiscussionStarted.class);
-        expectedNotification(PostedToDiscussion.class);
-        expectedNotification(PostContentAltered.class);
-    }
+		assertTrue(post.subject().startsWith("MODERATED: "));
+		assertTrue(post.bodyText().startsWith("MODERATED: "));
+
+		expectedEvents(4);
+		expectedEvent(ForumStarted.class);
+		expectedEvent(DiscussionStarted.class);
+		expectedEvent(PostedToDiscussion.class);
+		expectedEvent(PostContentAltered.class);
+
+		expectedNotifications(4);
+		expectedNotification(ForumStarted.class);
+		expectedNotification(DiscussionStarted.class);
+		expectedNotification(PostedToDiscussion.class);
+		expectedNotification(PostContentAltered.class);
+	}
 }

@@ -23,88 +23,86 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 
 import com.saasovation.identityaccess.application.ApplicationServiceTest;
-import com.saasovation.identityaccess.resource.GroupResource;
-import com.saasovation.identityaccess.resource.NotificationResource;
-import com.saasovation.identityaccess.resource.TenantResource;
-import com.saasovation.identityaccess.resource.UserResource;
 
 public abstract class ResourceTestCase extends ApplicationServiceTest {
 
-    protected final static int PORT = 8081;
+	protected final static int PORT = 8081;
 
-    private TJWSEmbeddedJaxrsServer server;
+	private TJWSEmbeddedJaxrsServer server;
 
-    protected ResourceTestCase() {
-        super();
-    }
+	protected ResourceTestCase() {
+		super();
+	}
 
-    protected void dumpHeaders(MultivaluedMap<String, String> aResponseHeaders) {
-        for (String key : aResponseHeaders.keySet()) {
-            System.out.print(key + ":");
-            String sep = " ";
-            for (String value : aResponseHeaders.get(key)) {
-                System.out.print(sep);
-                System.out.print(value);
-                sep = ", ";
-            }
+	protected void dumpHeaders(MultivaluedMap<String, String> aResponseHeaders) {
+		for (String key : aResponseHeaders.keySet()) {
+			System.out.print(key + ":");
+			String sep = " ";
+			for (String value : aResponseHeaders.get(key)) {
+				System.out.print(sep);
+				System.out.print(value);
+				sep = ", ";
+			}
 
-            System.out.println();
-        }
-    }
+			System.out.println();
+		}
+	}
 
-    protected void setUp() throws Exception {
-        super.setUp();
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
 
-        this.setUpEmbeddedServer();
-    }
+		this.setUpEmbeddedServer();
+	}
 
-    protected void tearDown() throws Exception {
-        this.getServer().stop();
+	@Override
+	protected void tearDown() throws Exception {
+		this.getServer().stop();
 
-        this.setServer(null);
+		this.setServer(null);
 
-        super.tearDown();
-    }
+		super.tearDown();
+	}
 
-    private void setUpEmbeddedServer() {
-        TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
+	private void setUpEmbeddedServer() {
+		TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
 
-        server.setPort(PORT);
-        server.getDeployment().setApplication(new ResourceTestCaseApplication());
-        server.getDeployment().getActualResourceClasses().add(GroupResource.class);
-        server.getDeployment().getActualResourceClasses().add(NotificationResource.class);
-        server.getDeployment().getActualResourceClasses().add(TenantResource.class);
-        server.getDeployment().getActualResourceClasses().add(UserResource.class);
+		server.setPort(PORT);
+		server.getDeployment().setApplication(new ResourceTestCaseApplication());
+		server.getDeployment().getActualResourceClasses().add(GroupResource.class);
+		server.getDeployment().getActualResourceClasses().add(NotificationResource.class);
+		server.getDeployment().getActualResourceClasses().add(TenantResource.class);
+		server.getDeployment().getActualResourceClasses().add(UserResource.class);
 
-        server.start();
+		server.start();
 
-        this.setServer(server);
-    }
+		this.setServer(server);
+	}
 
-    private TJWSEmbeddedJaxrsServer getServer() {
-        return server;
-    }
+	private TJWSEmbeddedJaxrsServer getServer() {
+		return server;
+	}
 
-    private void setServer(TJWSEmbeddedJaxrsServer aServer) {
-        this.server = aServer;
-    }
+	private void setServer(TJWSEmbeddedJaxrsServer aServer) {
+		this.server = aServer;
+	}
 
-    private static class ResourceTestCaseApplication extends Application {
+	private static class ResourceTestCaseApplication extends Application {
 
-        public ResourceTestCaseApplication() {
-            super();
-        }
+		public ResourceTestCaseApplication() {
+			super();
+		}
 
-        @Override
-        public Set<Class<?>> getClasses() {
-            Set<Class<?>> classes = new HashSet<Class<?>>();
-            return classes;
-        }
+		@Override
+		public Set<Class<?>> getClasses() {
+			Set<Class<?>> classes = new HashSet<Class<?>>();
+			return classes;
+		}
 
-        @Override
-        public Set<Object> getSingletons() {
-            Set<Object> singletons = new HashSet<Object>();
-            return singletons;
-        }
-    }
+		@Override
+		public Set<Object> getSingletons() {
+			Set<Object> singletons = new HashSet<Object>();
+			return singletons;
+		}
+	}
 }

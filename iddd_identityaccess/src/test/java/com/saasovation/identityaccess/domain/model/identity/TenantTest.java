@@ -21,159 +21,125 @@ import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 
 public class TenantTest extends IdentityAccessTest {
 
-    private boolean handled1;
-    private boolean handled2;
+	private boolean handled1;
+	private boolean handled2;
 
-    public TenantTest() {
-        super();
-    }
+	public TenantTest() {
+		super();
+	}
 
-    public void testProvisionTenant() throws Exception {
+	public void testProvisionTenant() throws Exception {
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<TenantProvisioned>() {
-                public void handleEvent(TenantProvisioned aDomainEvent) {
-                    handled1 = true;
-                }
-                public Class<TenantProvisioned> subscribedToEventType() {
-                    return TenantProvisioned.class;
-                }
-            });
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<TenantProvisioned>() {
+			@Override
+			public void handleEvent(TenantProvisioned aDomainEvent) {
+				handled1 = true;
+			}
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<TenantAdministratorRegistered>() {
-                public void handleEvent(TenantAdministratorRegistered aDomainEvent) {
-                    handled2 = true;
-                }
-                public Class<TenantAdministratorRegistered> subscribedToEventType() {
-                    return TenantAdministratorRegistered.class;
-                }
-            });
+			@Override
+			public Class<TenantProvisioned> subscribedToEventType() {
+				return TenantProvisioned.class;
+			}
+		});
 
-        Tenant tenant =
-            DomainRegistry
-                .tenantProvisioningService()
-                .provisionTenant(
-                        FIXTURE_TENANT_NAME,
-                        FIXTURE_TENANT_DESCRIPTION,
-                        new FullName("John", "Doe"),
-                        new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS),
-                        new PostalAddress(
-                                "123 Pearl Street",
-                                "Boulder",
-                                "CO",
-                                "80301",
-                                "US"),
-                        new Telephone("303-555-1210"),
-                        new Telephone("303-555-1212"));
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<TenantAdministratorRegistered>() {
+			@Override
+			public void handleEvent(TenantAdministratorRegistered aDomainEvent) {
+				handled2 = true;
+			}
 
-        assertTrue(handled1);
-        assertTrue(handled2);
+			@Override
+			public Class<TenantAdministratorRegistered> subscribedToEventType() {
+				return TenantAdministratorRegistered.class;
+			}
+		});
 
-        assertNotNull(tenant.tenantId());
-        assertNotNull(tenant.tenantId().id());
-        assertEquals(36, tenant.tenantId().id().length());
-        assertEquals(FIXTURE_TENANT_NAME, tenant.name());
-        assertEquals(FIXTURE_TENANT_DESCRIPTION, tenant.description());
-    }
+		Tenant tenant = DomainRegistry.tenantProvisioningService().provisionTenant(FIXTURE_TENANT_NAME, FIXTURE_TENANT_DESCRIPTION,
+				new FullName("John", "Doe"), new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS),
+				new PostalAddress("123 Pearl Street", "Boulder", "CO", "80301", "US"), new Telephone("303-555-1210"),
+				new Telephone("303-555-1212"));
 
-    public void testCreateOpenEndedInvitation() throws Exception {
+		assertTrue(handled1);
+		assertTrue(handled2);
 
-        Tenant tenant = this.tenantAggregate();
+		assertNotNull(tenant.tenantId());
+		assertNotNull(tenant.tenantId().id());
+		assertEquals(36, tenant.tenantId().id().length());
+		assertEquals(FIXTURE_TENANT_NAME, tenant.name());
+		assertEquals(FIXTURE_TENANT_DESCRIPTION, tenant.description());
+	}
 
-        tenant
-            .offerRegistrationInvitation("Open-Ended")
-            .openEnded();
+	public void testCreateOpenEndedInvitation() throws Exception {
 
-        assertNotNull(tenant.redefineRegistrationInvitationAs("Open-Ended"));
-    }
+		Tenant tenant = this.tenantAggregate();
 
-    public void testOpenEndedInvitationAvailable() throws Exception {
+		tenant.offerRegistrationInvitation("Open-Ended").openEnded();
 
-        Tenant tenant = this.tenantAggregate();
+		assertNotNull(tenant.redefineRegistrationInvitationAs("Open-Ended"));
+	}
 
-        tenant
-            .offerRegistrationInvitation("Open-Ended")
-            .openEnded();
+	public void testOpenEndedInvitationAvailable() throws Exception {
 
-        assertTrue(tenant.isRegistrationAvailableThrough("Open-Ended"));
-    }
+		Tenant tenant = this.tenantAggregate();
 
-    public void testClosedEndedInvitationAvailable() throws Exception {
+		tenant.offerRegistrationInvitation("Open-Ended").openEnded();
 
-        Tenant tenant = this.tenantAggregate();
+		assertTrue(tenant.isRegistrationAvailableThrough("Open-Ended"));
+	}
 
-        tenant
-            .offerRegistrationInvitation("Today-and-Tomorrow")
-            .startingOn(this.today())
-            .until(this.tomorrow());
+	public void testClosedEndedInvitationAvailable() throws Exception {
 
-        assertTrue(tenant.isRegistrationAvailableThrough("Today-and-Tomorrow"));
-    }
+		Tenant tenant = this.tenantAggregate();
 
-    public void testClosedEndedInvitationNotAvailable() throws Exception {
+		tenant.offerRegistrationInvitation("Today-and-Tomorrow").startingOn(this.today()).until(this.tomorrow());
 
-        Tenant tenant = this.tenantAggregate();
+		assertTrue(tenant.isRegistrationAvailableThrough("Today-and-Tomorrow"));
+	}
 
-        tenant
-            .offerRegistrationInvitation("Tomorrow-and-Day-After-Tomorrow")
-            .startingOn(this.tomorrow())
-            .until(this.dayAfterTomorrow());
+	public void testClosedEndedInvitationNotAvailable() throws Exception {
 
-        assertFalse(tenant.isRegistrationAvailableThrough("Tomorrow-and-Day-After-Tomorrow"));
-    }
+		Tenant tenant = this.tenantAggregate();
 
-    public void testAvailableInivitationDescriptor() throws Exception {
+		tenant.offerRegistrationInvitation("Tomorrow-and-Day-After-Tomorrow").startingOn(this.tomorrow()).until(this.dayAfterTomorrow());
 
-        Tenant tenant = this.tenantAggregate();
+		assertFalse(tenant.isRegistrationAvailableThrough("Tomorrow-and-Day-After-Tomorrow"));
+	}
 
-        tenant
-            .offerRegistrationInvitation("Open-Ended")
-            .openEnded();
+	public void testAvailableInivitationDescriptor() throws Exception {
 
-        tenant
-            .offerRegistrationInvitation("Today-and-Tomorrow")
-            .startingOn(this.today())
-            .until(this.tomorrow());
+		Tenant tenant = this.tenantAggregate();
 
-        assertEquals(tenant.allAvailableRegistrationInvitations().size(), 2);
-    }
+		tenant.offerRegistrationInvitation("Open-Ended").openEnded();
 
-    public void testUnavailableInivitationDescriptor() throws Exception {
+		tenant.offerRegistrationInvitation("Today-and-Tomorrow").startingOn(this.today()).until(this.tomorrow());
 
-        Tenant tenant = this.tenantAggregate();
+		assertEquals(tenant.allAvailableRegistrationInvitations().size(), 2);
+	}
 
-        tenant
-            .offerRegistrationInvitation("Tomorrow-and-Day-After-Tomorrow")
-            .startingOn(this.tomorrow())
-            .until(this.dayAfterTomorrow());
+	public void testUnavailableInivitationDescriptor() throws Exception {
 
-        assertEquals(tenant.allUnavailableRegistrationInvitations().size(), 1);
-    }
+		Tenant tenant = this.tenantAggregate();
 
-    public void testRegisterUser() throws Exception {
+		tenant.offerRegistrationInvitation("Tomorrow-and-Day-After-Tomorrow").startingOn(this.tomorrow()).until(this.dayAfterTomorrow());
 
-        Tenant tenant = this.tenantAggregate();
+		assertEquals(tenant.allUnavailableRegistrationInvitations().size(), 1);
+	}
 
-        RegistrationInvitation registrationInvitation =
-            this.registrationInvitationEntity(tenant);
+	public void testRegisterUser() throws Exception {
 
-        User user =
-            tenant.registerUser(
-                    registrationInvitation.invitationId(),
-                    FIXTURE_USERNAME,
-                    FIXTURE_PASSWORD,
-                    new Enablement(true, null, null),
-                    this.personEntity(tenant));
+		Tenant tenant = this.tenantAggregate();
 
-        assertNotNull(user);
+		RegistrationInvitation registrationInvitation = this.registrationInvitationEntity(tenant);
 
-        DomainRegistry.userRepository().add(user);
+		User user = tenant.registerUser(registrationInvitation.invitationId(), FIXTURE_USERNAME, FIXTURE_PASSWORD, new Enablement(true,
+				null, null), this.personEntity(tenant));
 
-        assertNotNull(user.enablement());
-        assertNotNull(user.person());
-        assertNotNull(user.userDescriptor());
-    }
+		assertNotNull(user);
+
+		DomainRegistry.userRepository().add(user);
+
+		assertNotNull(user.enablement());
+		assertNotNull(user.person());
+		assertNotNull(user.userDescriptor());
+	}
 }

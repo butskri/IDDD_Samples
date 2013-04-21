@@ -25,41 +25,40 @@ import com.saasovation.common.port.adapter.persistence.ConnectionProvider;
 
 public abstract class DomainTest extends EventTrackingTestCase {
 
-    protected ApplicationContext applicationContext;
-    protected DataSource dataSource;
+	protected ApplicationContext applicationContext;
+	protected DataSource dataSource;
 
-    private StorageCleaner storageCleaner;
+	private StorageCleaner storageCleaner;
 
-    protected DomainTest() {
-        super();
-    }
+	protected DomainTest() {
+		super();
+	}
 
-    protected void setUp() throws Exception {
-        if (applicationContext == null) {
-            applicationContext =
-                    new ClassPathXmlApplicationContext(
-                            new String[] {
-                                    "applicationContext-collaboration.xml" });
-        }
+	@Override
+	protected void setUp() throws Exception {
+		if (applicationContext == null) {
+			applicationContext = new ClassPathXmlApplicationContext(new String[] { "applicationContext-collaboration.xml" });
+		}
 
-        if (dataSource == null) {
-            dataSource = (DataSource) applicationContext.getBean("collaborationDataSource");
-        }
+		if (dataSource == null) {
+			dataSource = (DataSource) applicationContext.getBean("collaborationDataSource");
+		}
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
+		System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
 
-        storageCleaner = new StorageCleaner(this.dataSource);
+		storageCleaner = new StorageCleaner(this.dataSource);
 
-        super.setUp();
-    }
+		super.setUp();
+	}
 
-    protected void tearDown() throws Exception {
-        storageCleaner.clean();
+	@Override
+	protected void tearDown() throws Exception {
+		storageCleaner.clean();
 
-        ConnectionProvider.closeConnection();
+		ConnectionProvider.closeConnection();
 
-        System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
+		System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
 
-        super.tearDown();
-    }
+		super.tearDown();
+	}
 }

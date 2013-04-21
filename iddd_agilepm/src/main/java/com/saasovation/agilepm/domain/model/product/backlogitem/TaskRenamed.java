@@ -21,46 +21,47 @@ import com.saasovation.common.domain.model.DomainEvent;
 
 public class TaskRenamed implements DomainEvent {
 
-    private BacklogItemId backlogItemId;
-    private int eventVersion;
-    private String name;
-    private Date occurredOn;
-    private TaskId taskId;
-    private TenantId tenantId;
+	private BacklogItemId backlogItemId;
+	private int eventVersion;
+	private String name;
+	private Date occurredOn;
+	private TaskId taskId;
+	private TenantId tenantId;
 
-    public TaskRenamed(TenantId aTenantId, BacklogItemId aBacklogItemId, TaskId aTaskId, String aName) {
-        super();
+	public TaskRenamed(TenantId aTenantId, BacklogItemId aBacklogItemId, TaskId aTaskId, String aName) {
+		super();
 
-        this.backlogItemId = aBacklogItemId;
-        this.eventVersion = 1;
-        this.name = aName;
-        this.occurredOn = new Date();
-        this.taskId = aTaskId;
-        this.tenantId = aTenantId;
-    }
+		this.backlogItemId = aBacklogItemId;
+		this.eventVersion = 1;
+		this.name = aName;
+		this.occurredOn = new Date();
+		this.taskId = aTaskId;
+		this.tenantId = aTenantId;
+	}
 
-    public BacklogItemId backlogItemId() {
-        return this.backlogItemId;
-    }
+	public BacklogItemId backlogItemId() {
+		return this.backlogItemId;
+	}
 
-    public int eventVersion() {
-        return this.eventVersion;
-    }
+	@Override
+	public int eventVersion() {
+		return this.eventVersion;
+	}
 
-    public String name() {
-        return this.name;
-    }
+	public String name() {
+		return this.name;
+	}
 
-    @Override
-    public Date occurredOn() {
-        return this.occurredOn;
-    }
+	@Override
+	public Date occurredOn() {
+		return this.occurredOn;
+	}
 
-    public TaskId taskId() {
-        return this.taskId;
-    }
+	public TaskId taskId() {
+		return this.taskId;
+	}
 
-    public TenantId tenantId() {
-        return this.tenantId;
-    }
+	public TenantId tenantId() {
+		return this.tenantId;
+	}
 }

@@ -14,67 +14,77 @@
 
 package com.saasovation.agilepm.domain.model.product.backlogitem;
 
-public enum StoryPoints  {
+public enum StoryPoints {
 
-    ZERO {
-        public int pointValue() {
-            return 0;
-        }
-    },
+	ZERO {
+		@Override
+		public int pointValue() {
+			return 0;
+		}
+	},
 
-    ONE {
-        public int pointValue() {
-            return 1;
-        }
-    },
+	ONE {
+		@Override
+		public int pointValue() {
+			return 1;
+		}
+	},
 
-    TWO {
-        public int pointValue() {
-            return 2;
-        }
-    },
+	TWO {
+		@Override
+		public int pointValue() {
+			return 2;
+		}
+	},
 
-    THREE {
-        public int pointValue() {
-            return 3;
-        }
-    },
+	THREE {
+		@Override
+		public int pointValue() {
+			return 3;
+		}
+	},
 
-    FIVE {
-        public int pointValue() {
-            return 5;
-        }
-    },
+	FIVE {
+		@Override
+		public int pointValue() {
+			return 5;
+		}
+	},
 
-    EIGHT {
-        public int pointValue() {
-            return 8;
-        }
-    },
+	EIGHT {
+		@Override
+		public int pointValue() {
+			return 8;
+		}
+	},
 
-    THIRTEEN {
-        public int pointValue() {
-            return 13;
-        }
-    },
+	THIRTEEN {
+		@Override
+		public int pointValue() {
+			return 13;
+		}
+	},
 
-    TWENTY {
-        public int pointValue() {
-            return 20;
-        }
-    },
+	TWENTY {
+		@Override
+		public int pointValue() {
+			return 20;
+		}
+	},
 
-    FORTY {
-        public int pointValue() {
-            return 40;
-        }
-    },
+	FORTY {
+		@Override
+		public int pointValue() {
+			return 40;
+		}
+	},
 
-    ONE_HUNDRED {
-        public int pointValue() {
-            return 100;
-        }
-    };
+	ONE_HUNDRED {
+		@Override
+		public int pointValue() {
+			return 100;
+		}
+	};
 
-    public abstract int pointValue();
+	public abstract int pointValue();
 }

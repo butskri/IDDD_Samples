@@ -16,53 +16,58 @@ package com.saasovation.collaboration.domain.model.calendar;
 
 public enum RepeatType {
 
-    DoesNotRepeat {
-        public boolean isDoesNotRepeat() {
-            return true;
-        }
-    },
+	DoesNotRepeat {
+		@Override
+		public boolean isDoesNotRepeat() {
+			return true;
+		}
+	},
 
-    Daily {
-        public boolean isDaily() {
-            return true;
-        }
-    },
+	Daily {
+		@Override
+		public boolean isDaily() {
+			return true;
+		}
+	},
 
-    Weekly {
-        public boolean isWeekly() {
-            return true;
-        }
-    },
+	Weekly {
+		@Override
+		public boolean isWeekly() {
+			return true;
+		}
+	},
 
-    Monthy {
-        public boolean isMonthly() {
-            return true;
-        }
-    },
+	Monthy {
+		@Override
+		public boolean isMonthly() {
+			return true;
+		}
+	},
 
-    Yearly {
-        public boolean isYearly() {
-            return true;
-        }
-    };
+	Yearly {
+		@Override
+		public boolean isYearly() {
+			return true;
+		}
+	};
 
-    public boolean isDaily() {
-        return false;
-    }
+	public boolean isDaily() {
+		return false;
+	}
 
-    public boolean isDoesNotRepeat() {
-        return false;
-    }
+	public boolean isDoesNotRepeat() {
+		return false;
+	}
 
-    public boolean isMonthly() {
-        return false;
-    }
+	public boolean isMonthly() {
+		return false;
+	}
 
-    public boolean isWeekly() {
-        return false;
-    }
+	public boolean isWeekly() {
+		return false;
+	}
 
-    public boolean isYearly() {
-        return false;
-    }
+	public boolean isYearly() {
+		return false;
+	}
 }

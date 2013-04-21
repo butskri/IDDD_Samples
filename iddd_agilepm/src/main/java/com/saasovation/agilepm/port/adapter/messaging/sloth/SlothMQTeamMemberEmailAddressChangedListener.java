@@ -24,50 +24,44 @@ import com.saasovation.common.port.adapter.messaging.slothmq.ExchangeListener;
 
 public class SlothMQTeamMemberEmailAddressChangedListener extends ExchangeListener {
 
-    private TeamApplicationService teamApplicationService;
+	private TeamApplicationService teamApplicationService;
 
-    public SlothMQTeamMemberEmailAddressChangedListener(
-            TeamApplicationService aTeamApplicationService) {
+	public SlothMQTeamMemberEmailAddressChangedListener(TeamApplicationService aTeamApplicationService) {
 
-        super();
+		super();
 
-        this.teamApplicationService = aTeamApplicationService;
-    }
+		this.teamApplicationService = aTeamApplicationService;
+	}
 
-    protected String exchangeName() {
-        return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
-    }
+	@Override
+	protected String exchangeName() {
+		return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
+	}
 
-    protected void filteredDispatch(String aType, String aTextMessage) {
-        NotificationReader reader = new NotificationReader(aTextMessage);
+	@Override
+	protected void filteredDispatch(String aType, String aTextMessage) {
+		NotificationReader reader = new NotificationReader(aTextMessage);
 
-        String emailAddress =
-                reader.eventStringValue(
-                        "contactInformation.emailAddress.address");
-        String tenantId = reader.eventStringValue("tenantId.id");
-        String username = reader.eventStringValue("username");
-        Date occurredOn = reader.occurredOn();
+		String emailAddress = reader.eventStringValue("contactInformation.emailAddress.address");
+		String tenantId = reader.eventStringValue("tenantId.id");
+		String username = reader.eventStringValue("username");
+		Date occurredOn = reader.occurredOn();
 
-        this.teamApplicationService().changeTeamMemberEmailAddress(
-                new ChangeTeamMemberEmailAddressCommand(
-                    tenantId,
-                    username,
-                    emailAddress,
-                    occurredOn));
-    }
+		this.teamApplicationService().changeTeamMemberEmailAddress(
+				new ChangeTeamMemberEmailAddressCommand(tenantId, username, emailAddress, occurredOn));
+	}
 
-    protected String[] listensTo() {
-        return new String[] {
-                "com.saasovation.identityaccess.domain.model.identity.PersonContactInformationChanged"
-                };
-    }
+	@Override
+	protected String[] listensTo() {
+		return new String[] { "com.saasovation.identityaccess.domain.model.identity.PersonContactInformationChanged" };
+	}
 
-    @Override
-    protected String name() {
-        return this.getClass().getSimpleName();
-    }
+	@Override
+	protected String name() {
+		return this.getClass().getSimpleName();
+	}
 
-    private TeamApplicationService teamApplicationService() {
-        return this.teamApplicationService;
-    }
+	private TeamApplicationService teamApplicationService() {
+		return this.teamApplicationService;
+	}
 }

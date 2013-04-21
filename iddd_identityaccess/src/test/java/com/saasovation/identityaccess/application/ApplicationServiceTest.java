@@ -38,132 +38,96 @@ import com.saasovation.identityaccess.domain.model.identity.User;
 
 public abstract class ApplicationServiceTest extends TestCase {
 
-    protected static final String FIXTURE_GROUP_NAME = "Test Group";
-    protected static final String FIXTURE_PASSWORD = "SecretPassword!";
-    protected static final String FIXTURE_ROLE_NAME = "Test Role";
-    protected static final String FIXTURE_TENANT_DESCRIPTION = "This is a test tenant.";
-    protected static final String FIXTURE_TENANT_NAME = "Test Tenant";
-    protected static final String FIXTURE_USER_EMAIL_ADDRESS = "jdoe@saasovation.com";
-    protected static final String FIXTURE_USER_EMAIL_ADDRESS2 = "zdoe@saasovation.com";
-    protected static final String FIXTURE_USERNAME = "jdoe";
-    protected static final String FIXTURE_USERNAME2 = "zdoe";
+	protected static final String FIXTURE_GROUP_NAME = "Test Group";
+	protected static final String FIXTURE_PASSWORD = "SecretPassword!";
+	protected static final String FIXTURE_ROLE_NAME = "Test Role";
+	protected static final String FIXTURE_TENANT_DESCRIPTION = "This is a test tenant.";
+	protected static final String FIXTURE_TENANT_NAME = "Test Tenant";
+	protected static final String FIXTURE_USER_EMAIL_ADDRESS = "jdoe@saasovation.com";
+	protected static final String FIXTURE_USER_EMAIL_ADDRESS2 = "zdoe@saasovation.com";
+	protected static final String FIXTURE_USERNAME = "jdoe";
+	protected static final String FIXTURE_USERNAME2 = "zdoe";
 
-    protected Tenant activeTenant;
-    protected ApplicationContext applicationContext;
-    protected EventStore eventStore;
+	protected Tenant activeTenant;
+	protected ApplicationContext applicationContext;
+	protected EventStore eventStore;
 
-    public ApplicationServiceTest() {
-        super();
-    }
+	public ApplicationServiceTest() {
+		super();
+	}
 
-    protected Group group1Aggregate() {
-        return this.tenantAggregate()
-                   .provisionGroup(FIXTURE_GROUP_NAME + " 1", "A test group 1.");
-    }
+	protected Group group1Aggregate() {
+		return this.tenantAggregate().provisionGroup(FIXTURE_GROUP_NAME + " 1", "A test group 1.");
+	}
 
-    protected Group group2Aggregate() {
-        return this.tenantAggregate()
-                   .provisionGroup(FIXTURE_GROUP_NAME + " 2", "A test group 2.");
-    }
+	protected Group group2Aggregate() {
+		return this.tenantAggregate().provisionGroup(FIXTURE_GROUP_NAME + " 2", "A test group 2.");
+	}
 
-    protected Role roleAggregate() {
-        return this.tenantAggregate()
-                   .provisionRole(FIXTURE_ROLE_NAME, "A test role.", true);
-    }
+	protected Role roleAggregate() {
+		return this.tenantAggregate().provisionRole(FIXTURE_ROLE_NAME, "A test role.", true);
+	}
 
-    protected Tenant tenantAggregate() {
-        if (activeTenant == null) {
+	protected Tenant tenantAggregate() {
+		if (activeTenant == null) {
 
-            activeTenant =
-                    DomainRegistry
-                        .tenantProvisioningService()
-                        .provisionTenant(
-                                FIXTURE_TENANT_NAME,
-                                FIXTURE_TENANT_DESCRIPTION,
-                                new FullName("John", "Doe"),
-                                new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS),
-                                new PostalAddress(
-                                        "123 Pearl Street",
-                                        "Boulder",
-                                        "CO",
-                                        "80301",
-                                        "US"),
-                                new Telephone("303-555-1210"),
-                                new Telephone("303-555-1212"));
-        }
+			activeTenant = DomainRegistry.tenantProvisioningService().provisionTenant(FIXTURE_TENANT_NAME, FIXTURE_TENANT_DESCRIPTION,
+					new FullName("John", "Doe"), new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS),
+					new PostalAddress("123 Pearl Street", "Boulder", "CO", "80301", "US"), new Telephone("303-555-1210"),
+					new Telephone("303-555-1212"));
+		}
 
-        return activeTenant;
-    }
+		return activeTenant;
+	}
 
-    protected User userAggregate() {
+	protected User userAggregate() {
 
-        Tenant tenant = this.tenantAggregate();
+		Tenant tenant = this.tenantAggregate();
 
-        RegistrationInvitation invitation =
-                tenant.offerRegistrationInvitation("open-ended").openEnded();
+		RegistrationInvitation invitation = tenant.offerRegistrationInvitation("open-ended").openEnded();
 
-        User user =
-                tenant.registerUser(
-                        invitation.invitationId(),
-                        "jdoe",
-                        FIXTURE_PASSWORD,
-                        Enablement.indefiniteEnablement(),
-                        new Person(
-                                tenant.tenantId(),
-                                new FullName("John", "Doe"),
-                                new ContactInformation(
-                                        new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS),
-                                        new PostalAddress(
-                                                "123 Pearl Street",
-                                                "Boulder",
-                                                "CO",
-                                                "80301",
-                                                "US"),
-                                        new Telephone("303-555-1210"),
-                                        new Telephone("303-555-1212"))));
+		User user = tenant.registerUser(invitation.invitationId(), "jdoe", FIXTURE_PASSWORD, Enablement.indefiniteEnablement(), new Person(
+				tenant.tenantId(), new FullName("John", "Doe"), new ContactInformation(new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS),
+						new PostalAddress("123 Pearl Street", "Boulder", "CO", "80301", "US"), new Telephone("303-555-1210"),
+						new Telephone("303-555-1212"))));
 
-        return user;
-    }
+		return user;
+	}
 
-    protected void setUp() throws Exception {
-        System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
+	@Override
+	protected void setUp() throws Exception {
+		System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
 
-        super.setUp();
+		super.setUp();
 
-        DomainEventPublisher.instance().reset();
+		DomainEventPublisher.instance().reset();
 
-        applicationContext =
-                new ClassPathXmlApplicationContext(
-                        new String[] {
-                                "applicationContext-common.xml",
-                                "applicationContext-identityaccess-application.xml",
-                                "applicationContext-identityaccess-test.xml"
-                        });
+		applicationContext = new ClassPathXmlApplicationContext(new String[] { "applicationContext-common.xml",
+				"applicationContext-identityaccess-application.xml", "applicationContext-identityaccess-test.xml" });
 
+		this.eventStore = (EventStore) applicationContext.getBean("eventStore");
 
-        this.eventStore = (EventStore) applicationContext.getBean("eventStore");
+		this.clean((CleanableStore) this.eventStore);
+		this.clean((CleanableStore) DomainRegistry.groupRepository());
+		this.clean((CleanableStore) DomainRegistry.roleRepository());
+		this.clean((CleanableStore) DomainRegistry.tenantRepository());
+		this.clean((CleanableStore) DomainRegistry.userRepository());
+	}
 
-        this.clean((CleanableStore) this.eventStore);
-        this.clean((CleanableStore) DomainRegistry.groupRepository());
-        this.clean((CleanableStore) DomainRegistry.roleRepository());
-        this.clean((CleanableStore) DomainRegistry.tenantRepository());
-        this.clean((CleanableStore) DomainRegistry.userRepository());
-    }
+	@Override
+	protected void tearDown() throws Exception {
+		this.clean((CleanableStore) this.eventStore);
+		this.clean((CleanableStore) DomainRegistry.groupRepository());
+		this.clean((CleanableStore) DomainRegistry.roleRepository());
+		this.clean((CleanableStore) DomainRegistry.tenantRepository());
+		this.clean((CleanableStore) DomainRegistry.userRepository());
 
-    @Override
-    protected void tearDown() throws Exception {
-        this.clean((CleanableStore) this.eventStore);
-        this.clean((CleanableStore) DomainRegistry.groupRepository());
-        this.clean((CleanableStore) DomainRegistry.roleRepository());
-        this.clean((CleanableStore) DomainRegistry.tenantRepository());
-        this.clean((CleanableStore) DomainRegistry.userRepository());
+		super.tearDown();
 
-        super.tearDown();
+		System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
+	}
 
-        System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
-    }
-
-    private void clean(CleanableStore aCleanableStore) {
-        aCleanableStore.clean();
-    }
+	private void clean(CleanableStore aCleanableStore) {
+		aCleanableStore.clean();
+	}
 }

@@ -26,53 +26,55 @@ import com.saasovation.common.spring.SpringHibernateSessionProvider;
 
 public abstract class CommonTestCase extends TestCase {
 
-    protected ApplicationContext applicationContext;
-    protected SpringHibernateSessionProvider sessionProvider;
-    private Transaction transaction;
+	protected ApplicationContext applicationContext;
+	protected SpringHibernateSessionProvider sessionProvider;
+	private Transaction transaction;
 
-    public CommonTestCase() {
-        super();
-    }
+	public CommonTestCase() {
+		super();
+	}
 
-    protected Session session() {
-        Session session = this.sessionProvider.session();
+	protected Session session() {
+		Session session = this.sessionProvider.session();
 
-        return session;
-    }
+		return session;
+	}
 
-    protected Transaction transaction() {
-        return this.transaction;
-    }
+	protected Transaction transaction() {
+		return this.transaction;
+	}
 
-    protected void setUp() throws Exception {
+	@Override
+	protected void setUp() throws Exception {
 
-        DomainEventPublisher.instance().reset();
+		DomainEventPublisher.instance().reset();
 
-        this.applicationContext = new ClassPathXmlApplicationContext("applicationContext-common.xml");
+		this.applicationContext = new ClassPathXmlApplicationContext("applicationContext-common.xml");
 
-        this.sessionProvider = (SpringHibernateSessionProvider) this.applicationContext.getBean("sessionProvider");
+		this.sessionProvider = (SpringHibernateSessionProvider) this.applicationContext.getBean("sessionProvider");
 
-        this.setTransaction(this.session().beginTransaction());
+		this.setTransaction(this.session().beginTransaction());
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>> (start)" + this.getName());
+		System.out.println(">>>>>>>>>>>>>>>>>>>> (start)" + this.getName());
 
-        super.setUp();
-    }
+		super.setUp();
+	}
 
-    protected void tearDown() throws Exception {
+	@Override
+	protected void tearDown() throws Exception {
 
-        this.transaction().rollback();
+		this.transaction().rollback();
 
-        this.setTransaction(null);
+		this.setTransaction(null);
 
-        this.session().clear();
+		this.session().clear();
 
-        System.out.println("<<<<<<<<<<<<<<<<<<<< (end)");
+		System.out.println("<<<<<<<<<<<<<<<<<<<< (end)");
 
-        super.tearDown();
-    }
+		super.tearDown();
+	}
 
-    private void setTransaction(Transaction aTransaction) {
-        this.transaction = aTransaction;
-    }
+	private void setTransaction(Transaction aTransaction) {
+		this.transaction = aTransaction;
+	}
 }

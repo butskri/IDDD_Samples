@@ -21,51 +21,48 @@ import com.saasovation.common.domain.model.DomainEvent;
 
 public class TaskDescribed implements DomainEvent {
 
-    private BacklogItemId backlogItemId;
-    private String description;
-    private int eventVersion;
-    private Date occurredOn;
-    private TaskId taskId;
-    private TenantId tenantId;
+	private BacklogItemId backlogItemId;
+	private String description;
+	private int eventVersion;
+	private Date occurredOn;
+	private TaskId taskId;
+	private TenantId tenantId;
 
-    public TaskDescribed(
-            TenantId aTenantId,
-            BacklogItemId aBacklogItemId,
-            TaskId aTaskId,
-            String aDescription) {
+	public TaskDescribed(TenantId aTenantId, BacklogItemId aBacklogItemId, TaskId aTaskId, String aDescription) {
 
-        super();
+		super();
 
-        this.backlogItemId = aBacklogItemId;
-        this.description = aDescription;
-        this.eventVersion = 1;
-        this.occurredOn = new Date();
-        this.taskId = aTaskId;
-        this.tenantId = aTenantId;
-    }
+		this.backlogItemId = aBacklogItemId;
+		this.description = aDescription;
+		this.eventVersion = 1;
+		this.occurredOn = new Date();
+		this.taskId = aTaskId;
+		this.tenantId = aTenantId;
+	}
 
-    public BacklogItemId backlogItemId() {
-        return this.backlogItemId;
-    }
+	public BacklogItemId backlogItemId() {
+		return this.backlogItemId;
+	}
 
-    public String description() {
-        return this.description;
-    }
+	public String description() {
+		return this.description;
+	}
 
-    public int eventVersion() {
-        return this.eventVersion;
-    }
+	@Override
+	public int eventVersion() {
+		return this.eventVersion;
+	}
 
-    @Override
-    public Date occurredOn() {
-        return this.occurredOn;
-    }
+	@Override
+	public Date occurredOn() {
+		return this.occurredOn;
+	}
 
-    public TaskId taskId() {
-        return this.taskId;
-    }
+	public TaskId taskId() {
+		return this.taskId;
+	}
 
-    public TenantId tenantId() {
-        return this.tenantId;
-    }
+	public TenantId tenantId() {
+		return this.tenantId;
+	}
 }

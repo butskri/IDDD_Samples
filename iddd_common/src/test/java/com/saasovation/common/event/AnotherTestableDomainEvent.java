@@ -20,40 +20,41 @@ import com.saasovation.common.domain.model.DomainEvent;
 
 public class AnotherTestableDomainEvent implements DomainEvent {
 
-    private int eventVersion;
-    private Date occurredOn;
-    private double value;
+	private int eventVersion;
+	private Date occurredOn;
+	private double value;
 
-    public AnotherTestableDomainEvent(double aValue) {
-        super();
+	public AnotherTestableDomainEvent(double aValue) {
+		super();
 
-        this.setEventVersion(1);
-        this.setOccurredOn(new Date());
-        this.setValue(aValue);
-    }
+		this.setEventVersion(1);
+		this.setOccurredOn(new Date());
+		this.setValue(aValue);
+	}
 
-    public int eventVersion() {
-        return eventVersion;
-    }
+	@Override
+	public int eventVersion() {
+		return eventVersion;
+	}
 
-    @Override
-    public Date occurredOn() {
-        return this.occurredOn;
-    }
+	@Override
+	public Date occurredOn() {
+		return this.occurredOn;
+	}
 
-    public double value() {
-        return this.value;
-    }
+	public double value() {
+		return this.value;
+	}
 
-    private void setEventVersion(int eventVersion) {
-        this.eventVersion = eventVersion;
-    }
+	private void setEventVersion(int eventVersion) {
+		this.eventVersion = eventVersion;
+	}
 
-    private void setOccurredOn(Date occurredOn) {
-        this.occurredOn = occurredOn;
-    }
+	private void setOccurredOn(Date occurredOn) {
+		this.occurredOn = occurredOn;
+	}
 
-    private void setValue(double value) {
-        this.value = value;
-    }
+	private void setValue(double value) {
+		this.value = value;
+	}
 }

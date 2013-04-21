@@ -14,55 +14,60 @@
 
 package com.saasovation.agilepm.domain.model.discussion;
 
-public enum DiscussionAvailability  {
+public enum DiscussionAvailability {
 
-    ADD_ON_NOT_ENABLED {
-        public boolean isAddOnNotAvailable() {
-            return true;
-        }
-    },
+	ADD_ON_NOT_ENABLED {
+		@Override
+		public boolean isAddOnNotAvailable() {
+			return true;
+		}
+	},
 
-    FAILED {
-        public boolean isFailed() {
-            return true;
-        }
-    },
+	FAILED {
+		@Override
+		public boolean isFailed() {
+			return true;
+		}
+	},
 
-    NOT_REQUESTED {
-        public boolean isNotRequested() {
-            return true;
-        }
-    },
+	NOT_REQUESTED {
+		@Override
+		public boolean isNotRequested() {
+			return true;
+		}
+	},
 
-    REQUESTED {
-        public boolean isRequested() {
-            return true;
-        }
-    },
+	REQUESTED {
+		@Override
+		public boolean isRequested() {
+			return true;
+		}
+	},
 
-    READY {
-        public boolean isReady() {
-            return true;
-        }
-    };
+	READY {
+		@Override
+		public boolean isReady() {
+			return true;
+		}
+	};
 
-    public boolean isAddOnNotAvailable() {
-        return false;
-    }
+	public boolean isAddOnNotAvailable() {
+		return false;
+	}
 
-    public boolean isFailed() {
-        return false;
-    }
+	public boolean isFailed() {
+		return false;
+	}
 
-    public boolean isNotRequested() {
-        return false;
-    }
+	public boolean isNotRequested() {
+		return false;
+	}
 
-    public boolean isReady() {
-        return false;
-    }
+	public boolean isReady() {
+		return false;
+	}
 
-    public boolean isRequested() {
-        return false;
-    }
+	public boolean isRequested() {
+		return false;
+	}
 }

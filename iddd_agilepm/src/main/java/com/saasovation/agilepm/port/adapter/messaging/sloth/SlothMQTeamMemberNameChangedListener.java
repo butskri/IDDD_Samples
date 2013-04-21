@@ -24,46 +24,42 @@ import com.saasovation.common.port.adapter.messaging.slothmq.ExchangeListener;
 
 public class SlothMQTeamMemberNameChangedListener extends ExchangeListener {
 
-    private TeamApplicationService teamApplicationService;
+	private TeamApplicationService teamApplicationService;
 
-    public SlothMQTeamMemberNameChangedListener() {
-        super();
-    }
+	public SlothMQTeamMemberNameChangedListener() {
+		super();
+	}
 
-    protected String exchangeName() {
-        return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
-    }
+	@Override
+	protected String exchangeName() {
+		return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
+	}
 
-    protected void filteredDispatch(String aType, String aTextMessage) {
-        NotificationReader reader = new NotificationReader(aTextMessage);
+	@Override
+	protected void filteredDispatch(String aType, String aTextMessage) {
+		NotificationReader reader = new NotificationReader(aTextMessage);
 
-        String firstName = reader.eventStringValue("name.firstName");
-        String lastName = reader.eventStringValue("name.lastName");
-        String tenantId = reader.eventStringValue("tenantId.id");
-        String username = reader.eventStringValue("username");
-        Date occurredOn = reader.occurredOn();
+		String firstName = reader.eventStringValue("name.firstName");
+		String lastName = reader.eventStringValue("name.lastName");
+		String tenantId = reader.eventStringValue("tenantId.id");
+		String username = reader.eventStringValue("username");
+		Date occurredOn = reader.occurredOn();
 
-        this.teamApplicationService().changeTeamMemberName(
-                new ChangeTeamMemberNameCommand(
-                    tenantId,
-                    username,
-                    firstName,
-                    lastName,
-                    occurredOn));
-    }
+		this.teamApplicationService().changeTeamMemberName(
+				new ChangeTeamMemberNameCommand(tenantId, username, firstName, lastName, occurredOn));
+	}
 
-    protected String[] listensTo() {
-        return new String[] {
-                "com.saasovation.identityaccess.domain.model.identity.PersonNameChanged"
-                };
-    }
+	@Override
+	protected String[] listensTo() {
+		return new String[] { "com.saasovation.identityaccess.domain.model.identity.PersonNameChanged" };
+	}
 
-    @Override
-    protected String name() {
-        return this.getClass().getSimpleName();
-    }
+	@Override
+	protected String name() {
+		return this.getClass().getSimpleName();
+	}
 
-    private TeamApplicationService teamApplicationService() {
-        return this.teamApplicationService;
-    }
+	private TeamApplicationService teamApplicationService() {
+		return this.teamApplicationService;
+	}
 }

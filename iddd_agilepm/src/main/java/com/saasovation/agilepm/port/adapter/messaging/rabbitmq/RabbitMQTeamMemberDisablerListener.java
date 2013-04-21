@@ -25,56 +25,47 @@ import com.saasovation.common.port.adapter.messaging.rabbitmq.ExchangeListener;
 
 public class RabbitMQTeamMemberDisablerListener extends ExchangeListener {
 
-    private TeamApplicationService teamApplicationService;
+	private TeamApplicationService teamApplicationService;
 
-    public RabbitMQTeamMemberDisablerListener(
-            TeamApplicationService aTeamApplicationService) {
+	public RabbitMQTeamMemberDisablerListener(TeamApplicationService aTeamApplicationService) {
 
-        super();
+		super();
 
-        this.teamApplicationService = aTeamApplicationService;
-    }
+		this.teamApplicationService = aTeamApplicationService;
+	}
 
-    protected String exchangeName() {
-        return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
-    }
+	@Override
+	protected String exchangeName() {
+		return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
+	}
 
-    protected void filteredDispatch(String aType, String aTextMessage) {
-        NotificationReader reader = new NotificationReader(aTextMessage);
+	@Override
+	protected void filteredDispatch(String aType, String aTextMessage) {
+		NotificationReader reader = new NotificationReader(aTextMessage);
 
-        String roleName = reader.eventStringValue("roleName");
+		String roleName = reader.eventStringValue("roleName");
 
-        if (!roleName.equals("ScrumProductOwner") &&
-            !roleName.equals("ScrumTeamMember")) {
-            return;
-        }
+		if (!roleName.equals("ScrumProductOwner") && !roleName.equals("ScrumTeamMember")) {
+			return;
+		}
 
-        String tenantId = reader.eventStringValue("tenantId.id");
-        String username = reader.eventStringValue("username");
-        Date occurredOn = reader.occurredOn();
+		String tenantId = reader.eventStringValue("tenantId.id");
+		String username = reader.eventStringValue("username");
+		Date occurredOn = reader.occurredOn();
 
-        if (roleName.equals("ScrumProductOwner")) {
-            this.teamApplicationService().disableProductOwner(
-                    new DisableProductOwnerCommand(
-                        tenantId,
-                        username,
-                        occurredOn));
-        } else {
-            this.teamApplicationService().disableTeamMember(
-                    new DisableTeamMemberCommand(
-                        tenantId,
-                        username,
-                        occurredOn));
-        }
-    }
+		if (roleName.equals("ScrumProductOwner")) {
+			this.teamApplicationService().disableProductOwner(new DisableProductOwnerCommand(tenantId, username, occurredOn));
+		} else {
+			this.teamApplicationService().disableTeamMember(new DisableTeamMemberCommand(tenantId, username, occurredOn));
+		}
+	}
 
-    protected String[] listensTo() {
-        return new String[] {
-                "com.saasovation.identityaccess.domain.model.access.UserUnassignedFromRole"
-                };
-    }
+	@Override
+	protected String[] listensTo() {
+		return new String[] { "com.saasovation.identityaccess.domain.model.access.UserUnassignedFromRole" };
+	}
 
-    private TeamApplicationService teamApplicationService() {
-        return this.teamApplicationService;
-    }
+	private TeamApplicationService teamApplicationService() {
+		return this.teamApplicationService;
+	}
 }

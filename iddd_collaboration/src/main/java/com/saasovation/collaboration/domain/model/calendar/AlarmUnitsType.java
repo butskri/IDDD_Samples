@@ -16,33 +16,36 @@ package com.saasovation.collaboration.domain.model.calendar;
 
 public enum AlarmUnitsType {
 
-    Days {
-        public boolean isDays() {
-            return true;
-        }
-    },
+	Days {
+		@Override
+		public boolean isDays() {
+			return true;
+		}
+	},
 
-    Hours {
-        public boolean isHours() {
-            return true;
-        }
-    },
+	Hours {
+		@Override
+		public boolean isHours() {
+			return true;
+		}
+	},
 
-    Minutes {
-        public boolean isMinutes() {
-            return true;
-        }
-    };
+	Minutes {
+		@Override
+		public boolean isMinutes() {
+			return true;
+		}
+	};
 
-    public boolean isDays() {
-        return false;
-    }
+	public boolean isDays() {
+		return false;
+	}
 
-    public boolean isHours() {
-        return false;
-    }
+	public boolean isHours() {
+		return false;
+	}
 
-    public boolean isMinutes() {
-        return false;
-    }
+	public boolean isMinutes() {
+		return false;
+	}
 }

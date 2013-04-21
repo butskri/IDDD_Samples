@@ -23,7 +23,7 @@ public class SlothClient extends SlothWorker {
 
 	private static SlothClient instance;
 
-	private Map<String,ExchangeListener> exchangeListeners;
+	private Map<String, ExchangeListener> exchangeListeners;
 	private Object lock;
 
 	public static synchronized SlothClient instance() {
@@ -34,13 +34,13 @@ public class SlothClient extends SlothWorker {
 		return instance;
 	}
 
+	@Override
 	public void close() {
 		System.out.println("SLOTH CLIENT: Closing...");
 
 		super.close();
 
-		List<ExchangeListener> listeners =
-				new ArrayList<ExchangeListener>(this.exchangeListeners.values());
+		List<ExchangeListener> listeners = new ArrayList<ExchangeListener>(this.exchangeListeners.values());
 
 		for (ExchangeListener listener : listeners) {
 			this.unregister(listener);
@@ -60,7 +60,7 @@ public class SlothClient extends SlothWorker {
 	public void publish(String anExchangeName, String aType, String aMessage) {
 		String encodedMessage = "PUBLISH:" + anExchangeName + "TYPE:" + aType + "MSG:" + aMessage;
 
-        this.sendToServer(encodedMessage);
+		this.sendToServer(encodedMessage);
 	}
 
 	public void register(ExchangeListener anExchangeListener) {
@@ -82,7 +82,7 @@ public class SlothClient extends SlothWorker {
 	private SlothClient() {
 		super();
 
-		this.exchangeListeners = new HashMap<String,ExchangeListener>();
+		this.exchangeListeners = new HashMap<String, ExchangeListener>();
 		this.lock = new Object();
 
 		this.attach();
@@ -90,7 +90,7 @@ public class SlothClient extends SlothWorker {
 	}
 
 	private void attach() {
-        this.sendToServer("ATTACH:" + this.port());
+		this.sendToServer("ATTACH:" + this.port());
 	}
 
 	private void dispatchMessage(String anEncodedMessage) {
@@ -115,8 +115,7 @@ public class SlothClient extends SlothWorker {
 
 					listener.filteredDispatch(type, message);
 				} catch (Exception e) {
-					System.out.println("SLOTH CLIENT: Exception while dispatching message: "
-							+ e.getMessage() + ": " + anEncodedMessage);
+					System.out.println("SLOTH CLIENT: Exception while dispatching message: " + e.getMessage() + ": " + anEncodedMessage);
 					e.printStackTrace();
 				}
 			}
@@ -130,14 +129,14 @@ public class SlothClient extends SlothWorker {
 				while (!isClosed()) {
 					String receivedData = null;
 
-                    synchronized (lock) {
-                        receivedData = receive();
-                    }
+					synchronized (lock) {
+						receivedData = receive();
+					}
 
 					if (receivedData != null) {
 						dispatchMessage(receivedData.trim());
 					} else {
-                        sleepFor(10L);
+						sleepFor(10L);
 					}
 				}
 			}

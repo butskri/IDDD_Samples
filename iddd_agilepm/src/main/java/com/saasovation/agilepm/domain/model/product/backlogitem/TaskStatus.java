@@ -14,45 +14,49 @@
 
 package com.saasovation.agilepm.domain.model.product.backlogitem;
 
-public enum TaskStatus  {
+public enum TaskStatus {
 
-    NOT_STARTED {
-        public boolean isNotStarted() {
-            return true;
-        }
-    },
+	NOT_STARTED {
+		@Override
+		public boolean isNotStarted() {
+			return true;
+		}
+	},
 
-    IN_PROGRESS {
-        public boolean isInProgress() {
-            return true;
-        }
-    },
+	IN_PROGRESS {
+		@Override
+		public boolean isInProgress() {
+			return true;
+		}
+	},
 
-    IMPEDED {
-        public boolean isImpeded() {
-            return true;
-        }
-    },
+	IMPEDED {
+		@Override
+		public boolean isImpeded() {
+			return true;
+		}
+	},
 
-    DONE {
-        public boolean isDone() {
-            return true;
-        }
-    };
+	DONE {
+		@Override
+		public boolean isDone() {
+			return true;
+		}
+	};
 
-    public boolean isDone() {
-        return false;
-    }
+	public boolean isDone() {
+		return false;
+	}
 
-    public boolean isImpeded() {
-        return false;
-    }
+	public boolean isImpeded() {
+		return false;
+	}
 
-    public boolean isInProgress() {
-        return false;
-    }
+	public boolean isInProgress() {
+		return false;
+	}
 
-    public boolean isNotStarted() {
-        return false;
-    }
+	public boolean isNotStarted() {
+		return false;
+	}
 }

@@ -14,55 +14,60 @@
 
 package com.saasovation.agilepm.domain.model.product.backlogitem;
 
-public enum BacklogItemType  {
+public enum BacklogItemType {
 
-    FEATURE {
-        public boolean isFeature() {
-            return true;
-        }
-    },
+	FEATURE {
+		@Override
+		public boolean isFeature() {
+			return true;
+		}
+	},
 
-    ENHANCEMENT {
-        public boolean isEnhancement() {
-            return true;
-        }
-    },
+	ENHANCEMENT {
+		@Override
+		public boolean isEnhancement() {
+			return true;
+		}
+	},
 
-    DEFECT {
-        public boolean isDefect() {
-            return true;
-        }
-    },
+	DEFECT {
+		@Override
+		public boolean isDefect() {
+			return true;
+		}
+	},
 
-    FOUNDATION {
-        public boolean isFoundation() {
-            return true;
-        }
-    },
+	FOUNDATION {
+		@Override
+		public boolean isFoundation() {
+			return true;
+		}
+	},
 
-    INTEGRATION {
-        public boolean isIntegration() {
-            return true;
-        }
-    };
+	INTEGRATION {
+		@Override
+		public boolean isIntegration() {
+			return true;
+		}
+	};
 
-    public boolean isDefect() {
-        return false;
-    }
+	public boolean isDefect() {
+		return false;
+	}
 
-    public boolean isEnhancement() {
-        return false;
-    }
+	public boolean isEnhancement() {
+		return false;
+	}
 
-    public boolean isFeature() {
-        return false;
-    }
+	public boolean isFeature() {
+		return false;
+	}
 
-    public boolean isFoundation() {
-        return false;
-    }
+	public boolean isFoundation() {
+		return false;
+	}
 
-    public boolean isIntegration() {
-        return false;
-    }
+	public boolean isIntegration() {
+		return false;
+	}
 }

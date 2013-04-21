@@ -27,447 +27,420 @@ import com.saasovation.common.domain.model.DomainEventSubscriber;
 
 public class CalendarTest extends DomainTest {
 
-    private CalendarEntry calendarEntry;
-    private CalendarEntryId calendarEntryId;
+	private CalendarEntry calendarEntry;
+	private CalendarEntryId calendarEntryId;
 
-    public CalendarTest() {
-        super();
-    }
+	public CalendarTest() {
+		super();
+	}
 
-    public void testCreateCalendar() throws Exception {
+	public void testCreateCalendar() throws Exception {
 
-        Calendar calendar = this.calendarAggregate();
+		Calendar calendar = this.calendarAggregate();
 
-        assertEquals("John Doe's Calendar", calendar.name());
-        assertEquals("John Doe's everyday work calendar.", calendar.description());
-        assertEquals("jdoe", calendar.owner().identity());
+		assertEquals("John Doe's Calendar", calendar.name());
+		assertEquals("John Doe's everyday work calendar.", calendar.description());
+		assertEquals("jdoe", calendar.owner().identity());
 
-        DomainRegistry.calendarRepository().save(calendar);
+		DomainRegistry.calendarRepository().save(calendar);
 
-        expectedEvents(1);
-        expectedEvent(CalendarCreated.class);
+		expectedEvents(1);
+		expectedEvent(CalendarCreated.class);
 
-        expectedNotifications(1);
-        expectedNotification(CalendarCreated.class);
-    }
+		expectedNotifications(1);
+		expectedNotification(CalendarCreated.class);
+	}
 
-    public void testCalendarChangeDescription() throws Exception {
+	public void testCalendarChangeDescription() throws Exception {
 
-        Calendar calendar = this.calendarAggregate();
+		Calendar calendar = this.calendarAggregate();
 
-        calendar.changeDescription("A changed description.");
+		calendar.changeDescription("A changed description.");
 
-        assertEquals("A changed description.", calendar.description());
+		assertEquals("A changed description.", calendar.description());
 
-        DomainRegistry.calendarRepository().save(calendar);
+		DomainRegistry.calendarRepository().save(calendar);
 
-        expectedEvents(2);
-        expectedEvent(CalendarCreated.class);
-        expectedEvent(CalendarDescriptionChanged.class);
+		expectedEvents(2);
+		expectedEvent(CalendarCreated.class);
+		expectedEvent(CalendarDescriptionChanged.class);
 
-        expectedNotifications(2);
-        expectedNotification(CalendarCreated.class);
-        expectedNotification(CalendarDescriptionChanged.class);
-    }
+		expectedNotifications(2);
+		expectedNotification(CalendarCreated.class);
+		expectedNotification(CalendarDescriptionChanged.class);
+	}
 
-    public void testRenameCalendar() throws Exception {
+	public void testRenameCalendar() throws Exception {
 
-        Calendar calendar = this.calendarAggregate();
+		Calendar calendar = this.calendarAggregate();
 
-        calendar.rename("A different name.");
+		calendar.rename("A different name.");
 
-        assertEquals("A different name.", calendar.name());
+		assertEquals("A different name.", calendar.name());
 
-        DomainRegistry.calendarRepository().save(calendar);
+		DomainRegistry.calendarRepository().save(calendar);
 
-        expectedEvents(2);
-        expectedEvent(CalendarCreated.class);
-        expectedEvent(CalendarRenamed.class);
+		expectedEvents(2);
+		expectedEvent(CalendarCreated.class);
+		expectedEvent(CalendarRenamed.class);
 
-        expectedNotifications(2);
-        expectedNotification(CalendarCreated.class);
-        expectedNotification(CalendarRenamed.class);
-    }
+		expectedNotifications(2);
+		expectedNotification(CalendarCreated.class);
+		expectedNotification(CalendarRenamed.class);
+	}
 
-    public void testCalendarSharesWithUnshare() throws Exception {
+	public void testCalendarSharesWithUnshare() throws Exception {
 
-        Calendar calendar = this.calendarAggregate();
+		Calendar calendar = this.calendarAggregate();
 
-        assertTrue(calendar.allSharedWith().isEmpty());
+		assertTrue(calendar.allSharedWith().isEmpty());
 
-        calendar.shareCalendarWith(
-                new CalendarSharer(
-                        new Participant("zdoe", "Zoe Doe", "zdoe@saasovation.com")));
+		calendar.shareCalendarWith(new CalendarSharer(new Participant("zdoe", "Zoe Doe", "zdoe@saasovation.com")));
 
-        calendar.shareCalendarWith(
-                new CalendarSharer(
-                        new Participant("jdoe", "John Doe", "jdoe@saasovation.com")));
+		calendar.shareCalendarWith(new CalendarSharer(new Participant("jdoe", "John Doe", "jdoe@saasovation.com")));
 
-        assertFalse(calendar.allSharedWith().isEmpty());
+		assertFalse(calendar.allSharedWith().isEmpty());
 
-        CalendarSharer sharer = calendar.allSharedWith().iterator().next();
+		CalendarSharer sharer = calendar.allSharedWith().iterator().next();
 
-        calendar.unshareCalendarWith(sharer);
+		calendar.unshareCalendarWith(sharer);
 
-        assertFalse(calendar.allSharedWith().isEmpty());
+		assertFalse(calendar.allSharedWith().isEmpty());
 
-        DomainRegistry.calendarRepository().save(calendar);
+		DomainRegistry.calendarRepository().save(calendar);
 
-        expectedEvents(4);
-        expectedEvent(CalendarCreated.class);
-        expectedEvent(CalendarShared.class, 2);
-        expectedEvent(CalendarUnshared.class);
+		expectedEvents(4);
+		expectedEvent(CalendarCreated.class);
+		expectedEvent(CalendarShared.class, 2);
+		expectedEvent(CalendarUnshared.class);
 
-        expectedNotifications(4);
-        expectedNotification(CalendarCreated.class);
-        expectedNotification(CalendarShared.class, 2);
-        expectedNotification(CalendarUnshared.class);
-    }
+		expectedNotifications(4);
+		expectedNotification(CalendarCreated.class);
+		expectedNotification(CalendarShared.class, 2);
+		expectedNotification(CalendarUnshared.class);
+	}
 
-    public void testCalendarShares() throws Exception {
+	public void testCalendarShares() throws Exception {
 
-        Calendar calendar = this.calendarAggregate();
+		Calendar calendar = this.calendarAggregate();
 
-        assertTrue(calendar.allSharedWith().isEmpty());
+		assertTrue(calendar.allSharedWith().isEmpty());
 
-        calendar.shareCalendarWith(
-                new CalendarSharer(
-                        new Participant("zdoe", "Zoe Doe", "zdoe@saasovation.com")));
+		calendar.shareCalendarWith(new CalendarSharer(new Participant("zdoe", "Zoe Doe", "zdoe@saasovation.com")));
 
-        calendar.shareCalendarWith(
-                new CalendarSharer(
-                        new Participant("jdoe", "John Doe", "jdoe@saasovation.com")));
+		calendar.shareCalendarWith(new CalendarSharer(new Participant("jdoe", "John Doe", "jdoe@saasovation.com")));
 
-        assertFalse(calendar.allSharedWith().isEmpty());
+		assertFalse(calendar.allSharedWith().isEmpty());
 
-        DomainRegistry.calendarRepository().save(calendar);
+		DomainRegistry.calendarRepository().save(calendar);
 
-        expectedEvents(3);
-        expectedEvent(CalendarCreated.class);
-        expectedEvent(CalendarShared.class, 2);
+		expectedEvents(3);
+		expectedEvent(CalendarCreated.class);
+		expectedEvent(CalendarShared.class, 2);
 
-        expectedNotifications(3);
-        expectedNotification(CalendarCreated.class);
-        expectedNotification(CalendarShared.class, 2);
-    }
+		expectedNotifications(3);
+		expectedNotification(CalendarCreated.class);
+		expectedNotification(CalendarShared.class, 2);
+	}
 
-    public void testScheduleCalendarEntry() throws Exception {
+	public void testScheduleCalendarEntry() throws Exception {
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<CalendarEntryScheduled>() {
-                public void handleEvent(CalendarEntryScheduled aDomainEvent) {
-                    calendarEntryId = aDomainEvent.calendarEntryId();
-                }
-                public Class<CalendarEntryScheduled> subscribedToEventType() {
-                    return CalendarEntryScheduled.class;
-                }
-            });
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<CalendarEntryScheduled>() {
+			@Override
+			public void handleEvent(CalendarEntryScheduled aDomainEvent) {
+				calendarEntryId = aDomainEvent.calendarEntryId();
+			}
 
-        CalendarEntry calendarEntry = this.calendarEntryAggregate();
+			@Override
+			public Class<CalendarEntryScheduled> subscribedToEventType() {
+				return CalendarEntryScheduled.class;
+			}
+		});
 
-        DomainRegistry.calendarEntryRepository().save(calendarEntry);
+		CalendarEntry calendarEntry = this.calendarEntryAggregate();
 
-        assertNotNull(calendarEntryId);
+		DomainRegistry.calendarEntryRepository().save(calendarEntry);
 
-        expectedEvents(2);
-        expectedEvent(CalendarCreated.class);
-        expectedEvent(CalendarEntryScheduled.class);
+		assertNotNull(calendarEntryId);
 
-        expectedNotifications(2);
-        expectedNotification(CalendarCreated.class);
-        expectedNotification(CalendarEntryScheduled.class);
-    }
+		expectedEvents(2);
+		expectedEvent(CalendarCreated.class);
+		expectedEvent(CalendarEntryScheduled.class);
 
-    public void testCalendarEntryChangeDescription() throws Exception {
+		expectedNotifications(2);
+		expectedNotification(CalendarCreated.class);
+		expectedNotification(CalendarEntryScheduled.class);
+	}
 
-        CalendarEntry calendarEntry = this.calendarEntryAggregate();
+	public void testCalendarEntryChangeDescription() throws Exception {
 
-        calendarEntry.changeDescription("A changed description.");
+		CalendarEntry calendarEntry = this.calendarEntryAggregate();
 
-        assertEquals("A changed description.", calendarEntry.description());
+		calendarEntry.changeDescription("A changed description.");
 
-        DomainRegistry.calendarEntryRepository().save(calendarEntry);
+		assertEquals("A changed description.", calendarEntry.description());
 
-        expectedEvents(3);
-        expectedEvent(CalendarCreated.class);
-        expectedEvent(CalendarEntryScheduled.class);
-        expectedEvent(CalendarEntryDescriptionChanged.class);
+		DomainRegistry.calendarEntryRepository().save(calendarEntry);
 
-        expectedNotifications(3);
-        expectedNotification(CalendarCreated.class);
-        expectedNotification(CalendarEntryScheduled.class);
-        expectedNotification(CalendarEntryDescriptionChanged.class);
-    }
+		expectedEvents(3);
+		expectedEvent(CalendarCreated.class);
+		expectedEvent(CalendarEntryScheduled.class);
+		expectedEvent(CalendarEntryDescriptionChanged.class);
 
-    public void testInviteToCalendarEntry() throws Exception {
+		expectedNotifications(3);
+		expectedNotification(CalendarCreated.class);
+		expectedNotification(CalendarEntryScheduled.class);
+		expectedNotification(CalendarEntryDescriptionChanged.class);
+	}
 
-        CalendarEntry calendarEntry = this.calendarEntryAggregate();
+	public void testInviteToCalendarEntry() throws Exception {
 
-        assertTrue(calendarEntry.allInvitees().isEmpty());
+		CalendarEntry calendarEntry = this.calendarEntryAggregate();
 
-        Participant invitee1 = new Participant("jdoe", "John Doe", "jdoe@saasovation.com");
+		assertTrue(calendarEntry.allInvitees().isEmpty());
 
-        calendarEntry.invite(invitee1);
+		Participant invitee1 = new Participant("jdoe", "John Doe", "jdoe@saasovation.com");
 
-        assertFalse(calendarEntry.allInvitees().isEmpty());
-        assertEquals(1, calendarEntry.allInvitees().size());
-        assertEquals(invitee1, calendarEntry.allInvitees().iterator().next());
+		calendarEntry.invite(invitee1);
 
-        calendarEntry.uninvite(invitee1);
+		assertFalse(calendarEntry.allInvitees().isEmpty());
+		assertEquals(1, calendarEntry.allInvitees().size());
+		assertEquals(invitee1, calendarEntry.allInvitees().iterator().next());
 
-        assertTrue(calendarEntry.allInvitees().isEmpty());
+		calendarEntry.uninvite(invitee1);
 
-        Participant invitee2 = new Participant("tsmith", "Tom Smith", "tsmith@saasovation.com");
+		assertTrue(calendarEntry.allInvitees().isEmpty());
 
-        calendarEntry.invite(invitee1);
-        calendarEntry.invite(invitee2);
+		Participant invitee2 = new Participant("tsmith", "Tom Smith", "tsmith@saasovation.com");
 
-        assertFalse(calendarEntry.allInvitees().isEmpty());
-        assertEquals(2, calendarEntry.allInvitees().size());
+		calendarEntry.invite(invitee1);
+		calendarEntry.invite(invitee2);
 
-        Iterator<Participant> iterator = calendarEntry.allInvitees().iterator();
-        Participant participant1 = iterator.next();
-        Participant participant2 = iterator.next();
+		assertFalse(calendarEntry.allInvitees().isEmpty());
+		assertEquals(2, calendarEntry.allInvitees().size());
 
-        assertTrue(participant1.equals(invitee1) || participant1.equals(invitee2));
-        assertTrue(participant2.equals(invitee1) || participant2.equals(invitee2));
+		Iterator<Participant> iterator = calendarEntry.allInvitees().iterator();
+		Participant participant1 = iterator.next();
+		Participant participant2 = iterator.next();
 
-        calendarEntry.uninvite(invitee1);
+		assertTrue(participant1.equals(invitee1) || participant1.equals(invitee2));
+		assertTrue(participant2.equals(invitee1) || participant2.equals(invitee2));
 
-        assertFalse(calendarEntry.allInvitees().isEmpty());
+		calendarEntry.uninvite(invitee1);
 
-        calendarEntry.uninvite(invitee2);
+		assertFalse(calendarEntry.allInvitees().isEmpty());
 
-        assertTrue(calendarEntry.allInvitees().isEmpty());
+		calendarEntry.uninvite(invitee2);
 
-        DomainRegistry.calendarEntryRepository().save(calendarEntry);
+		assertTrue(calendarEntry.allInvitees().isEmpty());
 
-        expectedEvents(8);
-        expectedEvent(CalendarCreated.class);
-        expectedEvent(CalendarEntryScheduled.class);
-        expectedEvent(CalendarEntryParticipantInvited.class, 3);
-        expectedEvent(CalendarEntryParticipantUninvited.class, 3);
+		DomainRegistry.calendarEntryRepository().save(calendarEntry);
 
-        expectedNotifications(8);
-        expectedNotification(CalendarCreated.class);
-        expectedNotification(CalendarEntryScheduled.class);
-        expectedNotification(CalendarEntryParticipantInvited.class, 3);
-        expectedNotification(CalendarEntryParticipantUninvited.class, 3);
-    }
+		expectedEvents(8);
+		expectedEvent(CalendarCreated.class);
+		expectedEvent(CalendarEntryScheduled.class);
+		expectedEvent(CalendarEntryParticipantInvited.class, 3);
+		expectedEvent(CalendarEntryParticipantUninvited.class, 3);
 
-    public void testRelocateCaledarEntry() throws Exception {
+		expectedNotifications(8);
+		expectedNotification(CalendarCreated.class);
+		expectedNotification(CalendarEntryScheduled.class);
+		expectedNotification(CalendarEntryParticipantInvited.class, 3);
+		expectedNotification(CalendarEntryParticipantUninvited.class, 3);
+	}
 
-        CalendarEntry calendarEntry = this.calendarEntryAggregate();
+	public void testRelocateCaledarEntry() throws Exception {
 
-        calendarEntry.relocate("A changed location.");
+		CalendarEntry calendarEntry = this.calendarEntryAggregate();
 
-        assertEquals("A changed location.", calendarEntry.location());
+		calendarEntry.relocate("A changed location.");
 
-        DomainRegistry.calendarEntryRepository().save(calendarEntry);
+		assertEquals("A changed location.", calendarEntry.location());
 
-        expectedEvents(3);
-        expectedEvent(CalendarCreated.class);
-        expectedEvent(CalendarEntryScheduled.class);
-        expectedEvent(CalendarEntryRelocated.class);
+		DomainRegistry.calendarEntryRepository().save(calendarEntry);
 
-        expectedNotifications(3);
-        expectedNotification(CalendarCreated.class);
-        expectedNotification(CalendarEntryScheduled.class);
-        expectedNotification(CalendarEntryRelocated.class);
-    }
+		expectedEvents(3);
+		expectedEvent(CalendarCreated.class);
+		expectedEvent(CalendarEntryScheduled.class);
+		expectedEvent(CalendarEntryRelocated.class);
 
-    public void testRescheduleCalendarEntry() throws Exception {
+		expectedNotifications(3);
+		expectedNotification(CalendarCreated.class);
+		expectedNotification(CalendarEntryScheduled.class);
+		expectedNotification(CalendarEntryRelocated.class);
+	}
 
-        CalendarEntry calendarEntry = this.calendarEntryAggregate();
+	public void testRescheduleCalendarEntry() throws Exception {
 
-        TimeSpan timeSpan = this.oneWeekAroundTimeSpan();
-        Repetition repetition = Repetition.doesNotRepeatInstance(timeSpan.ends());
+		CalendarEntry calendarEntry = this.calendarEntryAggregate();
 
-        calendarEntry.reschedule(
-                "A changed description.",
-                "A changed location.",
-                timeSpan,
-                repetition,
-                this.oneHourBeforeAlarm());
+		TimeSpan timeSpan = this.oneWeekAroundTimeSpan();
+		Repetition repetition = Repetition.doesNotRepeatInstance(timeSpan.ends());
 
-        assertEquals("A changed description.", calendarEntry.description());
-        assertEquals("A changed location.", calendarEntry.location());
-        assertEquals(this.oneWeekAroundTimeSpan(), calendarEntry.timeSpan());
-        assertEquals(repetition, calendarEntry.repetition());
-        assertEquals(this.oneHourBeforeAlarm(), calendarEntry.alarm());
+		calendarEntry.reschedule("A changed description.", "A changed location.", timeSpan, repetition, this.oneHourBeforeAlarm());
 
-        calendarEntry.reschedule(
-                "A changed description.",
-                "A changed location.",
-                this.oneWeekAroundTimeSpan(),
-                Repetition.indefinitelyRepeatsInstance(RepeatType.Weekly),
-                this.oneHourBeforeAlarm());
+		assertEquals("A changed description.", calendarEntry.description());
+		assertEquals("A changed location.", calendarEntry.location());
+		assertEquals(this.oneWeekAroundTimeSpan(), calendarEntry.timeSpan());
+		assertEquals(repetition, calendarEntry.repetition());
+		assertEquals(this.oneHourBeforeAlarm(), calendarEntry.alarm());
 
-        assertEquals("A changed description.", calendarEntry.description());
-        assertEquals("A changed location.", calendarEntry.location());
-        assertEquals(this.oneWeekAroundTimeSpan(), calendarEntry.timeSpan());
-        assertEquals(Repetition.indefinitelyRepeatsInstance(RepeatType.Weekly), calendarEntry.repetition());
-        assertEquals(this.oneHourBeforeAlarm(), calendarEntry.alarm());
+		calendarEntry.reschedule("A changed description.", "A changed location.", this.oneWeekAroundTimeSpan(),
+				Repetition.indefinitelyRepeatsInstance(RepeatType.Weekly), this.oneHourBeforeAlarm());
 
-        DomainRegistry.calendarEntryRepository().save(calendarEntry);
+		assertEquals("A changed description.", calendarEntry.description());
+		assertEquals("A changed location.", calendarEntry.location());
+		assertEquals(this.oneWeekAroundTimeSpan(), calendarEntry.timeSpan());
+		assertEquals(Repetition.indefinitelyRepeatsInstance(RepeatType.Weekly), calendarEntry.repetition());
+		assertEquals(this.oneHourBeforeAlarm(), calendarEntry.alarm());
 
-        expectedEvents(6);
-        expectedEvent(CalendarCreated.class);
-        expectedEvent(CalendarEntryScheduled.class);
-        expectedEvent(CalendarEntryDescriptionChanged.class, 1);
-        expectedEvent(CalendarEntryRelocated.class, 1);
-        expectedEvent(CalendarEntryRescheduled.class, 2);
+		DomainRegistry.calendarEntryRepository().save(calendarEntry);
 
-        expectedNotifications(6);
-        expectedNotification(CalendarCreated.class);
-        expectedNotification(CalendarEntryScheduled.class);
-        expectedNotification(CalendarEntryDescriptionChanged.class);
-        expectedNotification(CalendarEntryRelocated.class, 1);
-        expectedNotification(CalendarEntryRescheduled.class, 2);
-    }
+		expectedEvents(6);
+		expectedEvent(CalendarCreated.class);
+		expectedEvent(CalendarEntryScheduled.class);
+		expectedEvent(CalendarEntryDescriptionChanged.class, 1);
+		expectedEvent(CalendarEntryRelocated.class, 1);
+		expectedEvent(CalendarEntryRescheduled.class, 2);
 
-    protected Calendar calendarAggregate() {
+		expectedNotifications(6);
+		expectedNotification(CalendarCreated.class);
+		expectedNotification(CalendarEntryScheduled.class);
+		expectedNotification(CalendarEntryDescriptionChanged.class);
+		expectedNotification(CalendarEntryRelocated.class, 1);
+		expectedNotification(CalendarEntryRescheduled.class, 2);
+	}
 
-        Tenant tenant = new Tenant("01234567");
+	protected Calendar calendarAggregate() {
 
-        Calendar calendar =
-            new Calendar(
-                    tenant,
-                    DomainRegistry.calendarRepository().nextIdentity(),
-                    "John Doe's Calendar",
-                    "John Doe's everyday work calendar.",
-                    new Owner("jdoe", "John Doe", "jdoe@saasovation.com"),
-                    new TreeSet<CalendarSharer>());
+		Tenant tenant = new Tenant("01234567");
 
-        return calendar;
-    }
+		Calendar calendar = new Calendar(tenant, DomainRegistry.calendarRepository().nextIdentity(), "John Doe's Calendar",
+				"John Doe's everyday work calendar.", new Owner("jdoe", "John Doe", "jdoe@saasovation.com"), new TreeSet<CalendarSharer>());
 
-    protected CalendarEntry calendarEntryAggregate() {
+		return calendar;
+	}
 
-        Calendar calendar = this.calendarAggregate();
+	protected CalendarEntry calendarEntryAggregate() {
 
-        DomainRegistry.calendarRepository().save(calendar);
+		Calendar calendar = this.calendarAggregate();
 
-        calendarEntry =
-            calendar.scheduleCalendarEntry(
-                    DomainRegistry.calendarIdentityService(),
-                    "A Doctor Checkup.",
-                    "Family Practice Offices",
-                    new Owner("jdoe", "John Doe", "jdoe@saasovation.com"),
-                    this.tomorrowOneHourTimeSpan(),
-                    this.weeklyRepetition(),
-                    this.oneHourBeforeAlarm(),
-                    new TreeSet<Participant>());
+		DomainRegistry.calendarRepository().save(calendar);
 
-        return calendarEntry;
-    }
+		calendarEntry = calendar.scheduleCalendarEntry(DomainRegistry.calendarIdentityService(), "A Doctor Checkup.",
+				"Family Practice Offices", new Owner("jdoe", "John Doe", "jdoe@saasovation.com"), this.tomorrowOneHourTimeSpan(),
+				this.weeklyRepetition(), this.oneHourBeforeAlarm(), new TreeSet<Participant>());
 
-    protected Repetition weeklyRepetition() {
+		return calendarEntry;
+	}
 
-        return new Repetition(
-                RepeatType.Weekly,
-                this.tomorrowThroughOneYearLaterTimeSpan().ends());
-    }
+	protected Repetition weeklyRepetition() {
 
-    protected Alarm oneHourBeforeAlarm() {
+		return new Repetition(RepeatType.Weekly, this.tomorrowThroughOneYearLaterTimeSpan().ends());
+	}
 
-        return new Alarm(AlarmUnitsType.Hours, 1);
-    }
+	protected Alarm oneHourBeforeAlarm() {
 
-    protected TimeSpan oneWeekAroundTimeSpan() {
+		return new Alarm(AlarmUnitsType.Hours, 1);
+	}
 
-        java.util.Calendar cal1 = java.util.Calendar.getInstance();
-        int idx = 0;
-        for ( ; idx < 3; ++idx) {
-            if (cal1.get(java.util.Calendar.DATE) == 1) {
-                break;
-            }
-            cal1.roll(java.util.Calendar.DATE, false);
-        }
-        cal1.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        cal1.clear(java.util.Calendar.MINUTE);
-        cal1.clear(java.util.Calendar.SECOND);
-        cal1.clear(java.util.Calendar.MILLISECOND);
+	protected TimeSpan oneWeekAroundTimeSpan() {
 
-        java.util.Calendar cal2 = java.util.Calendar.getInstance();
-        int currentDate = cal2.get(java.util.Calendar.DATE);
-        int currentMonth = cal2.get(java.util.Calendar.MONTH);
-        int total = 7 - idx - 1;
-        for (idx = 0; idx < total; ++idx) {
-            cal2.roll(java.util.Calendar.DATE, true);
-            if (cal2.get(java.util.Calendar.DATE) < currentDate) {
-                cal2.roll(java.util.Calendar.MONTH, true);
-                if (cal2.get(java.util.Calendar.MONTH) < currentMonth) {
-                    cal2.roll(java.util.Calendar.YEAR, true);
-                }
-            }
-        }
-        cal2.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        cal2.clear(java.util.Calendar.MINUTE);
-        cal2.clear(java.util.Calendar.SECOND);
-        cal2.clear(java.util.Calendar.MILLISECOND);
+		java.util.Calendar cal1 = java.util.Calendar.getInstance();
+		int idx = 0;
+		for (; idx < 3; ++idx) {
+			if (cal1.get(java.util.Calendar.DATE) == 1) {
+				break;
+			}
+			cal1.roll(java.util.Calendar.DATE, false);
+		}
+		cal1.set(java.util.Calendar.HOUR_OF_DAY, 0);
+		cal1.clear(java.util.Calendar.MINUTE);
+		cal1.clear(java.util.Calendar.SECOND);
+		cal1.clear(java.util.Calendar.MILLISECOND);
 
-//        System.out.println("oneWeekAround: Begins: " + cal1.getTime() + " Ends: " + cal2.getTime());
+		java.util.Calendar cal2 = java.util.Calendar.getInstance();
+		int currentDate = cal2.get(java.util.Calendar.DATE);
+		int currentMonth = cal2.get(java.util.Calendar.MONTH);
+		int total = 7 - idx - 1;
+		for (idx = 0; idx < total; ++idx) {
+			cal2.roll(java.util.Calendar.DATE, true);
+			if (cal2.get(java.util.Calendar.DATE) < currentDate) {
+				cal2.roll(java.util.Calendar.MONTH, true);
+				if (cal2.get(java.util.Calendar.MONTH) < currentMonth) {
+					cal2.roll(java.util.Calendar.YEAR, true);
+				}
+			}
+		}
+		cal2.set(java.util.Calendar.HOUR_OF_DAY, 0);
+		cal2.clear(java.util.Calendar.MINUTE);
+		cal2.clear(java.util.Calendar.SECOND);
+		cal2.clear(java.util.Calendar.MILLISECOND);
 
-        return new TimeSpan(cal1.getTime(), cal2.getTime());
-    }
+		// System.out.println("oneWeekAround: Begins: " + cal1.getTime() +
+		// " Ends: " + cal2.getTime());
 
-    protected TimeSpan oneDayPriorTimeSpan() {
+		return new TimeSpan(cal1.getTime(), cal2.getTime());
+	}
 
-        java.util.Calendar cal1 = java.util.Calendar.getInstance();
-        cal1.roll(java.util.Calendar.DATE, false);
-        cal1.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        cal1.clear(java.util.Calendar.MINUTE);
-        cal1.clear(java.util.Calendar.SECOND);
-        cal1.clear(java.util.Calendar.MILLISECOND);
+	protected TimeSpan oneDayPriorTimeSpan() {
 
-        java.util.Calendar cal2 = java.util.Calendar.getInstance();
-        cal2.setTime(cal1.getTime());
-        cal2.set(java.util.Calendar.HOUR_OF_DAY, 23);
-        cal2.set(java.util.Calendar.MINUTE, 59);
-        cal2.set(java.util.Calendar.SECOND, 59);
+		java.util.Calendar cal1 = java.util.Calendar.getInstance();
+		cal1.roll(java.util.Calendar.DATE, false);
+		cal1.set(java.util.Calendar.HOUR_OF_DAY, 0);
+		cal1.clear(java.util.Calendar.MINUTE);
+		cal1.clear(java.util.Calendar.SECOND);
+		cal1.clear(java.util.Calendar.MILLISECOND);
 
-//        System.out.println("oneDayPrior: Begins: " + cal1.getTime() + " Ends: " + cal2.getTime());
+		java.util.Calendar cal2 = java.util.Calendar.getInstance();
+		cal2.setTime(cal1.getTime());
+		cal2.set(java.util.Calendar.HOUR_OF_DAY, 23);
+		cal2.set(java.util.Calendar.MINUTE, 59);
+		cal2.set(java.util.Calendar.SECOND, 59);
 
-        return new TimeSpan(cal1.getTime(), cal2.getTime());
-    }
+		// System.out.println("oneDayPrior: Begins: " + cal1.getTime() +
+		// " Ends: " + cal2.getTime());
 
-    protected TimeSpan tomorrowOneHourTimeSpan() {
+		return new TimeSpan(cal1.getTime(), cal2.getTime());
+	}
 
-        java.util.Calendar cal1 = java.util.Calendar.getInstance();
-        cal1.roll(java.util.Calendar.DATE, true);
-        cal1.clear(java.util.Calendar.MINUTE);
-        cal1.clear(java.util.Calendar.SECOND);
-        cal1.clear(java.util.Calendar.MILLISECOND);
+	protected TimeSpan tomorrowOneHourTimeSpan() {
 
-        java.util.Calendar cal2 = java.util.Calendar.getInstance();
-        cal2.setTime(cal1.getTime());
-        cal2.roll(java.util.Calendar.HOUR_OF_DAY, true);
+		java.util.Calendar cal1 = java.util.Calendar.getInstance();
+		cal1.roll(java.util.Calendar.DATE, true);
+		cal1.clear(java.util.Calendar.MINUTE);
+		cal1.clear(java.util.Calendar.SECOND);
+		cal1.clear(java.util.Calendar.MILLISECOND);
 
-        if (cal1.get(java.util.Calendar.HOUR_OF_DAY) > cal2.get(java.util.Calendar.HOUR_OF_DAY)) {
-            cal2.roll(java.util.Calendar.DATE, true);
-        }
+		java.util.Calendar cal2 = java.util.Calendar.getInstance();
+		cal2.setTime(cal1.getTime());
+		cal2.roll(java.util.Calendar.HOUR_OF_DAY, true);
 
-//        System.out.println("tomorrowOneHour: Begins: " + cal1.getTime() + " Ends: " + cal2.getTime());
+		if (cal1.get(java.util.Calendar.HOUR_OF_DAY) > cal2.get(java.util.Calendar.HOUR_OF_DAY)) {
+			cal2.roll(java.util.Calendar.DATE, true);
+		}
 
-        return new TimeSpan(cal1.getTime(), cal2.getTime());
-    }
+		// System.out.println("tomorrowOneHour: Begins: " + cal1.getTime() +
+		// " Ends: " + cal2.getTime());
 
-    protected TimeSpan tomorrowThroughOneYearLaterTimeSpan() {
+		return new TimeSpan(cal1.getTime(), cal2.getTime());
+	}
 
-        java.util.Calendar cal1 = java.util.Calendar.getInstance();
-        cal1.roll(java.util.Calendar.DATE, true);
-        cal1.clear(java.util.Calendar.MINUTE);
-        cal1.clear(java.util.Calendar.SECOND);
-        cal1.clear(java.util.Calendar.MILLISECOND);
+	protected TimeSpan tomorrowThroughOneYearLaterTimeSpan() {
 
-        java.util.Calendar cal2 = java.util.Calendar.getInstance();
-        cal2.setTime(cal1.getTime());
-        cal2.roll(java.util.Calendar.YEAR, true);
+		java.util.Calendar cal1 = java.util.Calendar.getInstance();
+		cal1.roll(java.util.Calendar.DATE, true);
+		cal1.clear(java.util.Calendar.MINUTE);
+		cal1.clear(java.util.Calendar.SECOND);
+		cal1.clear(java.util.Calendar.MILLISECOND);
 
-//        System.out.println("tomorrowThroughOneYearLater: Begins: " + cal1.getTime() + " Ends: " + cal2.getTime());
+		java.util.Calendar cal2 = java.util.Calendar.getInstance();
+		cal2.setTime(cal1.getTime());
+		cal2.roll(java.util.Calendar.YEAR, true);
 
-        return new TimeSpan(cal1.getTime(), cal2.getTime());
-    }
+		// System.out.println("tomorrowThroughOneYearLater: Begins: " +
+		// cal1.getTime() + " Ends: " + cal2.getTime());
+
+		return new TimeSpan(cal1.getTime(), cal2.getTime());
+	}
 }

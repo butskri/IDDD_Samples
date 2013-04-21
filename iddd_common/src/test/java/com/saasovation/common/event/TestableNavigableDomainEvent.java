@@ -20,40 +20,41 @@ import com.saasovation.common.domain.model.DomainEvent;
 
 public class TestableNavigableDomainEvent implements DomainEvent {
 
-    private int eventVersion;
-    private TestableDomainEvent nestedEvent;
-    private Date occurredOn;
+	private int eventVersion;
+	private TestableDomainEvent nestedEvent;
+	private Date occurredOn;
 
-    public TestableNavigableDomainEvent(long anId, String aName) {
-        super();
+	public TestableNavigableDomainEvent(long anId, String aName) {
+		super();
 
-        this.setEventVersion(1);
-        this.setNestedEvent(new TestableDomainEvent(anId, aName));
-        this.setOccurredOn(new Date());
-    }
+		this.setEventVersion(1);
+		this.setNestedEvent(new TestableDomainEvent(anId, aName));
+		this.setOccurredOn(new Date());
+	}
 
-    public int eventVersion() {
-        return eventVersion;
-    }
+	@Override
+	public int eventVersion() {
+		return eventVersion;
+	}
 
-    public TestableDomainEvent nestedEvent() {
-        return nestedEvent;
-    }
+	public TestableDomainEvent nestedEvent() {
+		return nestedEvent;
+	}
 
-    @Override
-    public Date occurredOn() {
-        return this.occurredOn;
-    }
+	@Override
+	public Date occurredOn() {
+		return this.occurredOn;
+	}
 
-    private void setEventVersion(int eventVersion) {
-        this.eventVersion = eventVersion;
-    }
+	private void setEventVersion(int eventVersion) {
+		this.eventVersion = eventVersion;
+	}
 
-    private void setNestedEvent(TestableDomainEvent nestedEvent) {
-        this.nestedEvent = nestedEvent;
-    }
+	private void setNestedEvent(TestableDomainEvent nestedEvent) {
+		this.nestedEvent = nestedEvent;
+	}
 
-    private void setOccurredOn(Date occurredOn) {
-        this.occurredOn = occurredOn;
-    }
+	private void setOccurredOn(Date occurredOn) {
+		this.occurredOn = occurredOn;
+	}
 }

@@ -38,48 +38,50 @@ import com.saasovation.common.port.adapter.persistence.leveldb.LevelDBUnitOfWork
 
 public abstract class DomainTest extends EventTrackingTestCase {
 
-    protected BacklogItemRepository backlogItemRepository;
-    protected DB database;
-    protected ProductOwnerRepository productOwnerRepository;
-    protected ProductRepository productRepository;
-    protected ReleaseRepository releaseRepository;
-    protected SprintRepository sprintRepository;
-    protected TeamMemberRepository teamMemberRepository;
-    protected TeamRepository teamRepository;
+	protected BacklogItemRepository backlogItemRepository;
+	protected DB database;
+	protected ProductOwnerRepository productOwnerRepository;
+	protected ProductRepository productRepository;
+	protected ReleaseRepository releaseRepository;
+	protected SprintRepository sprintRepository;
+	protected TeamMemberRepository teamMemberRepository;
+	protected TeamRepository teamRepository;
 
-    public DomainTest() {
-        super();
-    }
+	public DomainTest() {
+		super();
+	}
 
-    protected void setUp() throws Exception {
+	@Override
+	protected void setUp() throws Exception {
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
+		System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
 
-        DomainEventPublisher.instance().reset();
+		DomainEventPublisher.instance().reset();
 
-        this.database = LevelDBProvider.instance().databaseFrom(LevelDBDatabasePath.agilePMPath());
+		this.database = LevelDBProvider.instance().databaseFrom(LevelDBDatabasePath.agilePMPath());
 
-        LevelDBProvider.instance().purge(this.database);
+		LevelDBProvider.instance().purge(this.database);
 
-        LevelDBUnitOfWork.start(this.database);
+		LevelDBUnitOfWork.start(this.database);
 
-        this.backlogItemRepository = new LevelDBBacklogItemRepository();
-        this.productOwnerRepository = new LevelDBProductOwnerRepository();
-        this.productRepository = new LevelDBProductRepository();
-        this.releaseRepository = new LevelDBReleaseRepository();
-        this.sprintRepository = new LevelDBSprintRepository();
-        this.teamMemberRepository = new LevelDBTeamMemberRepository();
-        this.teamRepository = new LevelDBTeamRepository();
+		this.backlogItemRepository = new LevelDBBacklogItemRepository();
+		this.productOwnerRepository = new LevelDBProductOwnerRepository();
+		this.productRepository = new LevelDBProductRepository();
+		this.releaseRepository = new LevelDBReleaseRepository();
+		this.sprintRepository = new LevelDBSprintRepository();
+		this.teamMemberRepository = new LevelDBTeamMemberRepository();
+		this.teamRepository = new LevelDBTeamRepository();
 
-        super.setUp();
-    }
+		super.setUp();
+	}
 
-    protected void tearDown() throws Exception {
+	@Override
+	protected void tearDown() throws Exception {
 
-        System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
+		System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
 
-        LevelDBProvider.instance().purge(this.database);
+		LevelDBProvider.instance().purge(this.database);
 
-        super.tearDown();
-    }
+		super.tearDown();
+	}
 }

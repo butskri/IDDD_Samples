@@ -26,58 +26,56 @@ import com.saasovation.common.spring.SpringHibernateSessionProvider;
 
 public abstract class DomainTest extends TestCase {
 
-    protected ApplicationContext applicationContext;
-    private SpringHibernateSessionProvider sessionProvider;
-    private Transaction transaction;
+	protected ApplicationContext applicationContext;
+	private SpringHibernateSessionProvider sessionProvider;
+	private Transaction transaction;
 
-    protected DomainTest() {
-        super();
-    }
+	protected DomainTest() {
+		super();
+	}
 
-    protected Session session() {
-        Session session = this.sessionProvider.session();
+	protected Session session() {
+		Session session = this.sessionProvider.session();
 
-        return session;
-    }
+		return session;
+	}
 
-    protected void setUp() throws Exception {
+	@Override
+	protected void setUp() throws Exception {
 
-        applicationContext =
-                new ClassPathXmlApplicationContext(
-                        new String[] {
-                                "applicationContext-identityaccess.xml",
-                                "applicationContext-common.xml" });
+		applicationContext = new ClassPathXmlApplicationContext(new String[] { "applicationContext-identityaccess.xml",
+				"applicationContext-common.xml" });
 
-        this.sessionProvider =
-                (SpringHibernateSessionProvider) applicationContext.getBean("sessionProvider");
+		this.sessionProvider = (SpringHibernateSessionProvider) applicationContext.getBean("sessionProvider");
 
-        this.setTransaction(this.session().beginTransaction());
+		this.setTransaction(this.session().beginTransaction());
 
-        DomainEventPublisher.instance().reset();
+		DomainEventPublisher.instance().reset();
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
+		System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
 
-        super.setUp();
-    }
+		super.setUp();
+	}
 
-    protected void tearDown() throws Exception {
+	@Override
+	protected void tearDown() throws Exception {
 
-        this.transaction().rollback();
+		this.transaction().rollback();
 
-        this.setTransaction(null);
+		this.setTransaction(null);
 
-        this.session().clear();
+		this.session().clear();
 
-        System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
+		System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
 
-        super.tearDown();
-    }
+		super.tearDown();
+	}
 
-    protected Transaction transaction() {
-        return transaction;
-    }
+	protected Transaction transaction() {
+		return transaction;
+	}
 
-    private void setTransaction(Transaction aTransaction) {
-        this.transaction = aTransaction;
-    }
+	private void setTransaction(Transaction aTransaction) {
+		this.transaction = aTransaction;
+	}
 }

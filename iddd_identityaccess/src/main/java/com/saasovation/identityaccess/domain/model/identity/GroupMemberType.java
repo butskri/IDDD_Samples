@@ -16,25 +16,31 @@ package com.saasovation.identityaccess.domain.model.identity;
 
 public enum GroupMemberType {
 
-    Group {
-        public boolean isGroup() {
-            return true;
-        }
-        public boolean isUser() {
-            return false;
-        }
-    },
+	Group {
+		@Override
+		public boolean isGroup() {
+			return true;
+		}
 
-    User {
-        public boolean isGroup() {
-            return false;
-        }
-        public boolean isUser() {
-            return true;
-        }
-    };
+		@Override
+		public boolean isUser() {
+			return false;
+		}
+	},
 
-    public abstract boolean isGroup();
+	User {
+		@Override
+		public boolean isGroup() {
+			return false;
+		}
 
-    public abstract boolean isUser();
+		@Override
+		public boolean isUser() {
+			return true;
+		}
+	};
+
+	public abstract boolean isGroup();
+
+	public abstract boolean isUser();
 }

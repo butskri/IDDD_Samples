@@ -16,69 +16,74 @@ package com.saasovation.agilepm.domain.model.product.backlogitem;
 
 public enum BacklogItemStatus {
 
-    PLANNED {
-        public boolean isPlanned() {
-            return true;
-        }
-    },
+	PLANNED {
+		@Override
+		public boolean isPlanned() {
+			return true;
+		}
+	},
 
-    SCHEDULED {
-        public boolean isScheduled() {
-            return true;
-        }
-    },
+	SCHEDULED {
+		@Override
+		public boolean isScheduled() {
+			return true;
+		}
+	},
 
-    COMMITTED {
-        public boolean isCommitted() {
-            return true;
-        }
-    },
+	COMMITTED {
+		@Override
+		public boolean isCommitted() {
+			return true;
+		}
+	},
 
-    DONE {
-        public boolean isDone() {
-            return true;
-        }
-    },
+	DONE {
+		@Override
+		public boolean isDone() {
+			return true;
+		}
+	},
 
-    REMOVED {
-        public boolean isRemoved() {
-            return true;
-        }
-    };
+	REMOVED {
+		@Override
+		public boolean isRemoved() {
+			return true;
+		}
+	};
 
-    public boolean isCommitted() {
-        return false;
-    }
+	public boolean isCommitted() {
+		return false;
+	}
 
-    public boolean isDone() {
-        return false;
-    }
+	public boolean isDone() {
+		return false;
+	}
 
-    public boolean isPlanned() {
-        return false;
-    }
+	public boolean isPlanned() {
+		return false;
+	}
 
-    public boolean isRemoved() {
-        return false;
-    }
+	public boolean isRemoved() {
+		return false;
+	}
 
-    public boolean isScheduled() {
-        return false;
-    }
+	public boolean isScheduled() {
+		return false;
+	}
 
-    public BacklogItemStatus regress() {
-        if (this.isPlanned()) {
-            return PLANNED;
-        } else if (this.isScheduled()) {
-            return PLANNED;
-        } else if (this.isCommitted()) {
-            return SCHEDULED;
-        } else if (this.isDone()) {
-            return COMMITTED;
-        } else if (this.isRemoved()) {
-            return PLANNED;
-        }
+	public BacklogItemStatus regress() {
+		if (this.isPlanned()) {
+			return PLANNED;
+		} else if (this.isScheduled()) {
+			return PLANNED;
+		} else if (this.isCommitted()) {
+			return SCHEDULED;
+		} else if (this.isDone()) {
+			return COMMITTED;
+		} else if (this.isRemoved()) {
+			return PLANNED;
+		}
 
-        return PLANNED;
-    }
+		return PLANNED;
+	}
 }

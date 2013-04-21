@@ -21,251 +21,236 @@ import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 
 public class UserTest extends IdentityAccessTest {
 
-    private boolean handled;
+	private boolean handled;
 
-    public UserTest() {
-        super();
-    }
+	public UserTest() {
+		super();
+	}
 
-    public void testUserEnablementEnabled() throws Exception {
+	public void testUserEnablementEnabled() throws Exception {
 
-        User user = this.userAggregate();
+		User user = this.userAggregate();
 
-        assertTrue(user.isEnabled());
-    }
+		assertTrue(user.isEnabled());
+	}
 
-    public void testUserEnablementDisabled() throws Exception {
+	public void testUserEnablementDisabled() throws Exception {
 
-        final User user = this.userAggregate();
+		final User user = this.userAggregate();
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<UserEnablementChanged>() {
-                public void handleEvent(UserEnablementChanged aDomainEvent) {
-                    assertEquals(aDomainEvent.username(), user.username());
-                    handled = true;
-                }
-                public Class<UserEnablementChanged> subscribedToEventType() {
-                    return UserEnablementChanged.class;
-                }
-            });
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<UserEnablementChanged>() {
+			@Override
+			public void handleEvent(UserEnablementChanged aDomainEvent) {
+				assertEquals(aDomainEvent.username(), user.username());
+				handled = true;
+			}
 
-        user.defineEnablement(new Enablement(false, null, null));
+			@Override
+			public Class<UserEnablementChanged> subscribedToEventType() {
+				return UserEnablementChanged.class;
+			}
+		});
 
-        assertFalse(user.isEnabled());
-        assertTrue(handled);
-    }
+		user.defineEnablement(new Enablement(false, null, null));
 
-    public void testUserEnablementWithinStartEndDates() throws Exception {
+		assertFalse(user.isEnabled());
+		assertTrue(handled);
+	}
 
-        final User user = this.userAggregate();
+	public void testUserEnablementWithinStartEndDates() throws Exception {
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<UserEnablementChanged>() {
-                public void handleEvent(UserEnablementChanged aDomainEvent) {
-                    assertEquals(aDomainEvent.username(), user.username());
-                    handled = true;
-                }
-                public Class<UserEnablementChanged> subscribedToEventType() {
-                    return UserEnablementChanged.class;
-                }
-            });
+		final User user = this.userAggregate();
 
-        user.defineEnablement(
-                new Enablement(
-                        true,
-                        this.today(),
-                        this.tomorrow()));
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<UserEnablementChanged>() {
+			@Override
+			public void handleEvent(UserEnablementChanged aDomainEvent) {
+				assertEquals(aDomainEvent.username(), user.username());
+				handled = true;
+			}
 
-        assertTrue(user.isEnabled());
-        assertTrue(handled);
-    }
+			@Override
+			public Class<UserEnablementChanged> subscribedToEventType() {
+				return UserEnablementChanged.class;
+			}
+		});
 
-    public void testUserEnablementOutsideStartEndDates() throws Exception {
+		user.defineEnablement(new Enablement(true, this.today(), this.tomorrow()));
 
-        final User user = this.userAggregate();
+		assertTrue(user.isEnabled());
+		assertTrue(handled);
+	}
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<UserEnablementChanged>() {
-                public void handleEvent(UserEnablementChanged aDomainEvent) {
-                    assertEquals(aDomainEvent.username(), user.username());
-                    handled = true;
-                }
-                public Class<UserEnablementChanged> subscribedToEventType() {
-                    return UserEnablementChanged.class;
-                }
-            });
+	public void testUserEnablementOutsideStartEndDates() throws Exception {
 
-        user.defineEnablement(
-                new Enablement(
-                        true,
-                        this.dayBeforeYesterday(),
-                        this.yesterday()));
+		final User user = this.userAggregate();
 
-        assertFalse(user.isEnabled());
-        assertTrue(handled);
-    }
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<UserEnablementChanged>() {
+			@Override
+			public void handleEvent(UserEnablementChanged aDomainEvent) {
+				assertEquals(aDomainEvent.username(), user.username());
+				handled = true;
+			}
 
-    public void testUserEnablementUnsequencedDates() throws Exception {
+			@Override
+			public Class<UserEnablementChanged> subscribedToEventType() {
+				return UserEnablementChanged.class;
+			}
+		});
 
-        final User user = this.userAggregate();
+		user.defineEnablement(new Enablement(true, this.dayBeforeYesterday(), this.yesterday()));
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<UserEnablementChanged>() {
-                public void handleEvent(UserEnablementChanged aDomainEvent) {
-                    assertEquals(aDomainEvent.username(), user.username());
-                    handled = true;
-                }
-                public Class<UserEnablementChanged> subscribedToEventType() {
-                    return UserEnablementChanged.class;
-                }
-            });
+		assertFalse(user.isEnabled());
+		assertTrue(handled);
+	}
 
-        boolean failure = false;
+	public void testUserEnablementUnsequencedDates() throws Exception {
 
-        try {
-            user.defineEnablement(
-                    new Enablement(
-                            true,
-                            this.tomorrow(),
-                            this.today()));
-        } catch (Throwable t) {
-            failure = true;
-        }
+		final User user = this.userAggregate();
 
-        assertTrue(failure);
-        assertFalse(handled);
-    }
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<UserEnablementChanged>() {
+			@Override
+			public void handleEvent(UserEnablementChanged aDomainEvent) {
+				assertEquals(aDomainEvent.username(), user.username());
+				handled = true;
+			}
 
-    public void testUserDescriptor() throws Exception {
+			@Override
+			public Class<UserEnablementChanged> subscribedToEventType() {
+				return UserEnablementChanged.class;
+			}
+		});
 
-        User user = this.userAggregate();
+		boolean failure = false;
 
-        UserDescriptor userDescriptor =
-            user.userDescriptor();
+		try {
+			user.defineEnablement(new Enablement(true, this.tomorrow(), this.today()));
+		} catch (Throwable t) {
+			failure = true;
+		}
 
-        assertNotNull(userDescriptor.emailAddress());
-        assertEquals(userDescriptor.emailAddress(), FIXTURE_USER_EMAIL_ADDRESS);
+		assertTrue(failure);
+		assertFalse(handled);
+	}
 
-        assertNotNull(userDescriptor.tenantId());
-        assertEquals(userDescriptor.tenantId(), user.tenantId());
+	public void testUserDescriptor() throws Exception {
 
-        assertNotNull(userDescriptor.username());
-        assertEquals(userDescriptor.username(), FIXTURE_USERNAME);
-    }
+		User user = this.userAggregate();
 
-    public void testUserChangePassword() throws Exception {
+		UserDescriptor userDescriptor = user.userDescriptor();
 
-        final User user = this.userAggregate();
+		assertNotNull(userDescriptor.emailAddress());
+		assertEquals(userDescriptor.emailAddress(), FIXTURE_USER_EMAIL_ADDRESS);
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<UserPasswordChanged>() {
-                public void handleEvent(UserPasswordChanged aDomainEvent) {
-                    assertEquals(aDomainEvent.username(), user.username());
-                    assertEquals(aDomainEvent.tenantId(), user.tenantId());
-                    handled = true;
-                }
-                public Class<UserPasswordChanged> subscribedToEventType() {
-                    return UserPasswordChanged.class;
-                }
-            });
+		assertNotNull(userDescriptor.tenantId());
+		assertEquals(userDescriptor.tenantId(), user.tenantId());
 
-        user.changePassword(FIXTURE_PASSWORD, "ThisIsANewPassword.");
+		assertNotNull(userDescriptor.username());
+		assertEquals(userDescriptor.username(), FIXTURE_USERNAME);
+	}
 
-        assertTrue(handled);
-    }
+	public void testUserChangePassword() throws Exception {
 
-    public void testUserChangePasswordFails() throws Exception {
+		final User user = this.userAggregate();
 
-        User user = this.userAggregate();
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<UserPasswordChanged>() {
+			@Override
+			public void handleEvent(UserPasswordChanged aDomainEvent) {
+				assertEquals(aDomainEvent.username(), user.username());
+				assertEquals(aDomainEvent.tenantId(), user.tenantId());
+				handled = true;
+			}
 
-        try {
+			@Override
+			public Class<UserPasswordChanged> subscribedToEventType() {
+				return UserPasswordChanged.class;
+			}
+		});
 
-            user.changePassword("no clue", "ThisIsANewP4ssw0rd.");
+		user.changePassword(FIXTURE_PASSWORD, "ThisIsANewPassword.");
 
-            assertEquals(FIXTURE_PASSWORD, "no clue");
+		assertTrue(handled);
+	}
 
-        } catch (Exception e) {
-            // good path, fall through
-        }
-    }
+	public void testUserChangePasswordFails() throws Exception {
 
-    public void testUserPasswordHashedOnConstruction() throws Exception {
+		User user = this.userAggregate();
 
-        User user = this.userAggregate();
+		try {
 
-        assertFalse(FIXTURE_PASSWORD.equals(user.password()));
-    }
+			user.changePassword("no clue", "ThisIsANewP4ssw0rd.");
 
-    public void testUserPasswordHashedOnChange() throws Exception {
+			assertEquals(FIXTURE_PASSWORD, "no clue");
 
-        User user = this.userAggregate();
+		} catch (Exception e) {
+			// good path, fall through
+		}
+	}
 
-        String strongPassword = DomainRegistry.passwordService().generateStrongPassword();
+	public void testUserPasswordHashedOnConstruction() throws Exception {
 
-        user.changePassword(FIXTURE_PASSWORD, strongPassword);
+		User user = this.userAggregate();
 
-        assertFalse(FIXTURE_PASSWORD.equals(user.password()));
-        assertFalse(strongPassword.equals(user.password()));
-    }
+		assertFalse(FIXTURE_PASSWORD.equals(user.password()));
+	}
 
-    public void testUserPersonalContactInformationChanged() throws Exception {
+	public void testUserPasswordHashedOnChange() throws Exception {
 
-        final User user = this.userAggregate();
+		User user = this.userAggregate();
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<PersonContactInformationChanged>() {
-                public void handleEvent(PersonContactInformationChanged aDomainEvent) {
-                    assertEquals(aDomainEvent.username(), user.username());
-                    handled = true;
-                }
-                public Class<PersonContactInformationChanged> subscribedToEventType() {
-                    return PersonContactInformationChanged.class;
-                }
-            });
+		String strongPassword = DomainRegistry.passwordService().generateStrongPassword();
 
-        user.changePersonalContactInformation(
-                new ContactInformation(
-                    new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS2),
-                    new PostalAddress(
-                            "123 Mockingbird Lane",
-                            "Boulder",
-                            "CO",
-                            "80301",
-                            "US"),
-                    new Telephone("303-555-1210"),
-                    new Telephone("303-555-1212")));
+		user.changePassword(FIXTURE_PASSWORD, strongPassword);
 
-        assertEquals(new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS2), user.person().emailAddress());
-        assertEquals("123 Mockingbird Lane", user.person().contactInformation().postalAddress().streetAddress());
-        assertTrue(handled);
-    }
+		assertFalse(FIXTURE_PASSWORD.equals(user.password()));
+		assertFalse(strongPassword.equals(user.password()));
+	}
 
-    public void testUserPersonNameChanged() throws Exception {
+	public void testUserPersonalContactInformationChanged() throws Exception {
 
-        final User user = this.userAggregate();
+		final User user = this.userAggregate();
 
-        DomainEventPublisher
-            .instance()
-            .subscribe(new DomainEventSubscriber<PersonNameChanged>() {
-                public void handleEvent(PersonNameChanged aDomainEvent) {
-                    assertEquals(aDomainEvent.username(), user.username());
-                    assertEquals(aDomainEvent.name().firstName(), "Joe");
-                    assertEquals(aDomainEvent.name().lastName(), "Smith");
-                    handled = true;
-                }
-                public Class<PersonNameChanged> subscribedToEventType() {
-                    return PersonNameChanged.class;
-                }
-            });
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<PersonContactInformationChanged>() {
+			@Override
+			public void handleEvent(PersonContactInformationChanged aDomainEvent) {
+				assertEquals(aDomainEvent.username(), user.username());
+				handled = true;
+			}
 
-        user.changePersonalName(new FullName("Joe", "Smith"));
+			@Override
+			public Class<PersonContactInformationChanged> subscribedToEventType() {
+				return PersonContactInformationChanged.class;
+			}
+		});
 
-        assertTrue(handled);
-    }
+		user.changePersonalContactInformation(new ContactInformation(new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS2), new PostalAddress(
+				"123 Mockingbird Lane", "Boulder", "CO", "80301", "US"), new Telephone("303-555-1210"), new Telephone("303-555-1212")));
+
+		assertEquals(new EmailAddress(FIXTURE_USER_EMAIL_ADDRESS2), user.person().emailAddress());
+		assertEquals("123 Mockingbird Lane", user.person().contactInformation().postalAddress().streetAddress());
+		assertTrue(handled);
+	}
+
+	public void testUserPersonNameChanged() throws Exception {
+
+		final User user = this.userAggregate();
+
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<PersonNameChanged>() {
+			@Override
+			public void handleEvent(PersonNameChanged aDomainEvent) {
+				assertEquals(aDomainEvent.username(), user.username());
+				assertEquals(aDomainEvent.name().firstName(), "Joe");
+				assertEquals(aDomainEvent.name().lastName(), "Smith");
+				handled = true;
+			}
+
+			@Override
+			public Class<PersonNameChanged> subscribedToEventType() {
+				return PersonNameChanged.class;
+			}
+		});
+
+		user.changePersonalName(new FullName("Joe", "Smith"));
+
+		assertTrue(handled);
+	}
 }

@@ -26,303 +26,301 @@ import com.saasovation.common.port.adapter.messaging.Exchanges;
 
 public abstract class EventTrackingTestCase extends TestCase {
 
-    protected TestAgilePMRabbitMQExchangeListener agilePmRabbitMQExchangeListener;
-    protected TestAgilePMSlothMQExchangeListener agilePmSlothMQExchangeListener;
-    protected TestCollaborationRabbitMQExchangeListener collaborationRabbitMQExchangeListener;
-    protected TestCollaborationSlothMQExchangeListener collaborationSlothMQExchangeListener;
-    protected TestIdentityAccessRabbitMQExchangeListener identityAccessRabbitMQExchangeListener;
-    protected TestIdentityAccessSlothMQExchangeListener identityAccessSlothMQExchangeListener;
+	protected TestAgilePMRabbitMQExchangeListener agilePmRabbitMQExchangeListener;
+	protected TestAgilePMSlothMQExchangeListener agilePmSlothMQExchangeListener;
+	protected TestCollaborationRabbitMQExchangeListener collaborationRabbitMQExchangeListener;
+	protected TestCollaborationSlothMQExchangeListener collaborationSlothMQExchangeListener;
+	protected TestIdentityAccessRabbitMQExchangeListener identityAccessRabbitMQExchangeListener;
+	protected TestIdentityAccessSlothMQExchangeListener identityAccessSlothMQExchangeListener;
 
-    private List<Class<? extends DomainEvent>> handledEvents;
-    private Map<String,String> handledNotifications;
+	private List<Class<? extends DomainEvent>> handledEvents;
+	private Map<String, String> handledNotifications;
 
-    protected EventTrackingTestCase() {
-        super();
-    }
+	protected EventTrackingTestCase() {
+		super();
+	}
 
-    protected void expectedEvent(Class<? extends DomainEvent> aDomainEventType) {
-        this.expectedEvent(aDomainEventType, 1);
-    }
+	protected void expectedEvent(Class<? extends DomainEvent> aDomainEventType) {
+		this.expectedEvent(aDomainEventType, 1);
+	}
 
-    protected void expectedEvent(Class<? extends DomainEvent> aDomainEventType, int aTotal) {
-        int count = 0;
+	protected void expectedEvent(Class<? extends DomainEvent> aDomainEventType, int aTotal) {
+		int count = 0;
 
-        for (Class<? extends DomainEvent> type : this.handledEvents) {
-            if (type == aDomainEventType) {
-                ++count;
-            }
-        }
+		for (Class<? extends DomainEvent> type : this.handledEvents) {
+			if (type == aDomainEventType) {
+				++count;
+			}
+		}
 
-        if (count != aTotal) {
-            throw new IllegalStateException("Expected " + aTotal + " " + aDomainEventType.getSimpleName()
-                    + " events, but handled " + this.handledEvents.size() + " events: "
-                    + this.handledEvents);
-        }
-    }
+		if (count != aTotal) {
+			throw new IllegalStateException("Expected " + aTotal + " " + aDomainEventType.getSimpleName() + " events, but handled "
+					+ this.handledEvents.size() + " events: " + this.handledEvents);
+		}
+	}
 
-    protected void expectedEvents(int anEventCount) {
-        if (this.handledEvents.size() != anEventCount) {
-            throw new IllegalStateException("Expected " + anEventCount +
-                    " events, but handled " + this.handledEvents.size() + " events: "
-                    + this.handledEvents);
-        }
-    }
+	protected void expectedEvents(int anEventCount) {
+		if (this.handledEvents.size() != anEventCount) {
+			throw new IllegalStateException("Expected " + anEventCount + " events, but handled " + this.handledEvents.size() + " events: "
+					+ this.handledEvents);
+		}
+	}
 
-    protected void expectedNotification(Class<? extends DomainEvent> aNotificationType) {
-        this.expectedNotification(aNotificationType, 1);
-    }
+	protected void expectedNotification(Class<? extends DomainEvent> aNotificationType) {
+		this.expectedNotification(aNotificationType, 1);
+	}
 
-    protected void expectedNotification(Class<? extends DomainEvent> aNotificationType, int aTotal) {
-        try {
-            Thread.sleep(500L);
-        } catch (InterruptedException e) {
-            // ignore
-        }
+	protected void expectedNotification(Class<? extends DomainEvent> aNotificationType, int aTotal) {
+		try {
+			Thread.sleep(500L);
+		} catch (InterruptedException e) {
+			// ignore
+		}
 
-        int count = 0;
+		int count = 0;
 
-        String notificationTypeName = aNotificationType.getName();
+		String notificationTypeName = aNotificationType.getName();
 
-        for (String type : this.handledNotifications.values()) {
-            if (type.equals(notificationTypeName)) {
-                ++count;
-            }
-        }
+		for (String type : this.handledNotifications.values()) {
+			if (type.equals(notificationTypeName)) {
+				++count;
+			}
+		}
 
-        if (count != aTotal) {
-            throw new IllegalStateException("Expected " + aTotal + " " + aNotificationType.getSimpleName()
-                    + " notifications, but handled " + this.handledNotifications.size() + " notifications: "
-                    + this.handledNotifications.values());
-        }
-    }
+		if (count != aTotal) {
+			throw new IllegalStateException("Expected " + aTotal + " " + aNotificationType.getSimpleName() + " notifications, but handled "
+					+ this.handledNotifications.size() + " notifications: " + this.handledNotifications.values());
+		}
+	}
 
-    protected void expectedNotifications(int anNotificationCount) {
-        try {
-            Thread.sleep(500L);
-        } catch (InterruptedException e) {
-            // ignore
-        }
+	protected void expectedNotifications(int anNotificationCount) {
+		try {
+			Thread.sleep(500L);
+		} catch (InterruptedException e) {
+			// ignore
+		}
 
-        if (this.handledNotifications.size() != anNotificationCount) {
-            throw new IllegalStateException("Expected " + anNotificationCount + " notifications, but handled "
-                    + this.handledNotifications.size() + " notifications: "
-                    + this.handledNotifications.values());
-        }
-    }
+		if (this.handledNotifications.size() != anNotificationCount) {
+			throw new IllegalStateException("Expected " + anNotificationCount + " notifications, but handled "
+					+ this.handledNotifications.size() + " notifications: " + this.handledNotifications.values());
+		}
+	}
 
-    protected void setUp() throws Exception {
-//        SlothServer.executeInProcessDetachedServer();
+	@Override
+	protected void setUp() throws Exception {
+		// SlothServer.executeInProcessDetachedServer();
 
-        DomainEventPublisher.instance().reset();
+		DomainEventPublisher.instance().reset();
 
-        DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<DomainEvent>() {
-            @Override
-            public void handleEvent(DomainEvent aDomainEvent) {
-                handledEvents.add(aDomainEvent.getClass());
-            }
+		DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<DomainEvent>() {
+			@Override
+			public void handleEvent(DomainEvent aDomainEvent) {
+				handledEvents.add(aDomainEvent.getClass());
+			}
 
-            @Override
-            public Class<DomainEvent> subscribedToEventType() {
-                return DomainEvent.class;
-            }
-        });
+			@Override
+			public Class<DomainEvent> subscribedToEventType() {
+				return DomainEvent.class;
+			}
+		});
 
-        this.handledEvents = new ArrayList<Class<? extends DomainEvent>>();
-        this.handledNotifications = new HashMap<String,String>();
+		this.handledEvents = new ArrayList<Class<? extends DomainEvent>>();
+		this.handledNotifications = new HashMap<String, String>();
 
-        this.agilePmRabbitMQExchangeListener = new TestAgilePMRabbitMQExchangeListener();
-        this.collaborationRabbitMQExchangeListener = new TestCollaborationRabbitMQExchangeListener();
-        this.identityAccessRabbitMQExchangeListener = new TestIdentityAccessRabbitMQExchangeListener();
+		this.agilePmRabbitMQExchangeListener = new TestAgilePMRabbitMQExchangeListener();
+		this.collaborationRabbitMQExchangeListener = new TestCollaborationRabbitMQExchangeListener();
+		this.identityAccessRabbitMQExchangeListener = new TestIdentityAccessRabbitMQExchangeListener();
 
-//        this.agilePmSlothMQExchangeListener = new TestAgilePMSlothMQExchangeListener();
-//        this.collaborationSlothMQExchangeListener = new TestCollaborationSlothMQExchangeListener();
-//        this.identityAccessSlothMQExchangeListener = new TestIdentityAccessSlothMQExchangeListener();
+		// this.agilePmSlothMQExchangeListener = new
+		// TestAgilePMSlothMQExchangeListener();
+		// this.collaborationSlothMQExchangeListener = new
+		// TestCollaborationSlothMQExchangeListener();
+		// this.identityAccessSlothMQExchangeListener = new
+		// TestIdentityAccessSlothMQExchangeListener();
 
-        Thread.sleep(100L);
-    }
+		Thread.sleep(100L);
+	}
 
-    protected void tearDown() throws Exception {
-        this.agilePmRabbitMQExchangeListener.close();
-        this.collaborationRabbitMQExchangeListener.close();
-        this.identityAccessRabbitMQExchangeListener.close();
+	@Override
+	protected void tearDown() throws Exception {
+		this.agilePmRabbitMQExchangeListener.close();
+		this.collaborationRabbitMQExchangeListener.close();
+		this.identityAccessRabbitMQExchangeListener.close();
 
-//        this.agilePmSlothMQExchangeListener.close();
-//        this.collaborationSlothMQExchangeListener.close();
-//        this.identityAccessSlothMQExchangeListener.close();
-//
-//        SlothClient.instance().closeAll();
+		// this.agilePmSlothMQExchangeListener.close();
+		// this.collaborationSlothMQExchangeListener.close();
+		// this.identityAccessSlothMQExchangeListener.close();
+		//
+		// SlothClient.instance().closeAll();
 
-        Thread.sleep(100L);
-    }
+		Thread.sleep(100L);
+	}
 
-    protected class TestAgilePMRabbitMQExchangeListener
-            extends com.saasovation.common.port.adapter.messaging.rabbitmq.ExchangeListener {
+	protected class TestAgilePMRabbitMQExchangeListener extends com.saasovation.common.port.adapter.messaging.rabbitmq.ExchangeListener {
 
-        TestAgilePMRabbitMQExchangeListener() {
-            super();
-        }
+		TestAgilePMRabbitMQExchangeListener() {
+			super();
+		}
 
-        @Override
-        protected String exchangeName() {
-            return Exchanges.AGILEPM_EXCHANGE_NAME;
-        }
+		@Override
+		protected String exchangeName() {
+			return Exchanges.AGILEPM_EXCHANGE_NAME;
+		}
 
-        @Override
-        protected void filteredDispatch(String aType, String aTextMessage) {
-            synchronized(handledNotifications) {
-                NotificationReader notification = new NotificationReader(aTextMessage);
-                handledNotifications.put(notification.notificationIdAsString(), aType);
-            }
-        }
+		@Override
+		protected void filteredDispatch(String aType, String aTextMessage) {
+			synchronized (handledNotifications) {
+				NotificationReader notification = new NotificationReader(aTextMessage);
+				handledNotifications.put(notification.notificationIdAsString(), aType);
+			}
+		}
 
-        @Override
-        protected String[] listensTo() {
-            return null; // receive all
-        }
-    }
+		@Override
+		protected String[] listensTo() {
+			return null; // receive all
+		}
+	}
 
-    protected class TestAgilePMSlothMQExchangeListener
-            extends com.saasovation.common.port.adapter.messaging.slothmq.ExchangeListener {
+	protected class TestAgilePMSlothMQExchangeListener extends com.saasovation.common.port.adapter.messaging.slothmq.ExchangeListener {
 
-        TestAgilePMSlothMQExchangeListener() {
-            super();
-        }
+		TestAgilePMSlothMQExchangeListener() {
+			super();
+		}
 
-        @Override
-        protected String exchangeName() {
-            return Exchanges.AGILEPM_EXCHANGE_NAME;
-        }
+		@Override
+		protected String exchangeName() {
+			return Exchanges.AGILEPM_EXCHANGE_NAME;
+		}
 
-        @Override
-        protected void filteredDispatch(String aType, String aTextMessage) {
-            synchronized(handledNotifications) {
-                NotificationReader notification = new NotificationReader(aTextMessage);
-                handledNotifications.put(notification.notificationIdAsString(), aType);
-            }
-        }
+		@Override
+		protected void filteredDispatch(String aType, String aTextMessage) {
+			synchronized (handledNotifications) {
+				NotificationReader notification = new NotificationReader(aTextMessage);
+				handledNotifications.put(notification.notificationIdAsString(), aType);
+			}
+		}
 
-        @Override
-        protected String[] listensTo() {
-            return null; // receive all
-        }
+		@Override
+		protected String[] listensTo() {
+			return null; // receive all
+		}
 
-        @Override
-        protected String name() {
-            return this.getClass().getName();
-        }
-    }
+		@Override
+		protected String name() {
+			return this.getClass().getName();
+		}
+	}
 
-    protected class TestCollaborationRabbitMQExchangeListener
-            extends com.saasovation.common.port.adapter.messaging.rabbitmq.ExchangeListener {
+	protected class TestCollaborationRabbitMQExchangeListener extends
+			com.saasovation.common.port.adapter.messaging.rabbitmq.ExchangeListener {
 
-        TestCollaborationRabbitMQExchangeListener() {
-            super();
-        }
+		TestCollaborationRabbitMQExchangeListener() {
+			super();
+		}
 
-        @Override
-        protected String exchangeName() {
-            return Exchanges.COLLABORATION_EXCHANGE_NAME;
-        }
+		@Override
+		protected String exchangeName() {
+			return Exchanges.COLLABORATION_EXCHANGE_NAME;
+		}
 
-        @Override
-        protected void filteredDispatch(String aType, String aTextMessage) {
-            synchronized(handledNotifications) {
-                NotificationReader notification = new NotificationReader(aTextMessage);
-                handledNotifications.put(notification.notificationIdAsString(), aType);
-            }
-        }
+		@Override
+		protected void filteredDispatch(String aType, String aTextMessage) {
+			synchronized (handledNotifications) {
+				NotificationReader notification = new NotificationReader(aTextMessage);
+				handledNotifications.put(notification.notificationIdAsString(), aType);
+			}
+		}
 
-        @Override
-        protected String[] listensTo() {
-            return new String[0]; // receive all
-        }
-    }
+		@Override
+		protected String[] listensTo() {
+			return new String[0]; // receive all
+		}
+	}
 
-    protected class TestCollaborationSlothMQExchangeListener
-            extends com.saasovation.common.port.adapter.messaging.slothmq.ExchangeListener {
+	protected class TestCollaborationSlothMQExchangeListener extends com.saasovation.common.port.adapter.messaging.slothmq.ExchangeListener {
 
-        TestCollaborationSlothMQExchangeListener() {
-            super();
-        }
+		TestCollaborationSlothMQExchangeListener() {
+			super();
+		}
 
-        @Override
-        protected String exchangeName() {
-            return Exchanges.COLLABORATION_EXCHANGE_NAME;
-        }
+		@Override
+		protected String exchangeName() {
+			return Exchanges.COLLABORATION_EXCHANGE_NAME;
+		}
 
-        @Override
-        protected void filteredDispatch(String aType, String aTextMessage) {
-            synchronized(handledNotifications) {
-                NotificationReader notification = new NotificationReader(aTextMessage);
-                handledNotifications.put(notification.notificationIdAsString(), aType);
-            }
-        }
+		@Override
+		protected void filteredDispatch(String aType, String aTextMessage) {
+			synchronized (handledNotifications) {
+				NotificationReader notification = new NotificationReader(aTextMessage);
+				handledNotifications.put(notification.notificationIdAsString(), aType);
+			}
+		}
 
-        @Override
-        protected String[] listensTo() {
-            return new String[0]; // receive all
-        }
+		@Override
+		protected String[] listensTo() {
+			return new String[0]; // receive all
+		}
 
-        @Override
-        protected String name() {
-            return this.getClass().getName();
-        }
-    }
+		@Override
+		protected String name() {
+			return this.getClass().getName();
+		}
+	}
 
-    protected class TestIdentityAccessRabbitMQExchangeListener
-            extends com.saasovation.common.port.adapter.messaging.rabbitmq.ExchangeListener {
+	protected class TestIdentityAccessRabbitMQExchangeListener extends
+			com.saasovation.common.port.adapter.messaging.rabbitmq.ExchangeListener {
 
-        TestIdentityAccessRabbitMQExchangeListener() {
-            super();
-        }
+		TestIdentityAccessRabbitMQExchangeListener() {
+			super();
+		}
 
-        @Override
-        protected String exchangeName() {
-            return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
-        }
+		@Override
+		protected String exchangeName() {
+			return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
+		}
 
-        @Override
-        protected void filteredDispatch(String aType, String aTextMessage) {
-            synchronized(handledNotifications) {
-                NotificationReader notification = new NotificationReader(aTextMessage);
-                handledNotifications.put(notification.notificationIdAsString(), aType);
-            }
-        }
+		@Override
+		protected void filteredDispatch(String aType, String aTextMessage) {
+			synchronized (handledNotifications) {
+				NotificationReader notification = new NotificationReader(aTextMessage);
+				handledNotifications.put(notification.notificationIdAsString(), aType);
+			}
+		}
 
-        @Override
-        protected String[] listensTo() {
-            return null; // receive all
-        }
-    }
+		@Override
+		protected String[] listensTo() {
+			return null; // receive all
+		}
+	}
 
-    protected class TestIdentityAccessSlothMQExchangeListener
-            extends com.saasovation.common.port.adapter.messaging.slothmq.ExchangeListener {
+	protected class TestIdentityAccessSlothMQExchangeListener extends
+			com.saasovation.common.port.adapter.messaging.slothmq.ExchangeListener {
 
-        TestIdentityAccessSlothMQExchangeListener() {
-            super();
-        }
+		TestIdentityAccessSlothMQExchangeListener() {
+			super();
+		}
 
-        @Override
-        protected String exchangeName() {
-            return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
-        }
+		@Override
+		protected String exchangeName() {
+			return Exchanges.IDENTITY_ACCESS_EXCHANGE_NAME;
+		}
 
-        @Override
-        protected void filteredDispatch(String aType, String aTextMessage) {
-            synchronized(handledNotifications) {
-                NotificationReader notification = new NotificationReader(aTextMessage);
-                handledNotifications.put(notification.notificationIdAsString(), aType);
-            }
-        }
+		@Override
+		protected void filteredDispatch(String aType, String aTextMessage) {
+			synchronized (handledNotifications) {
+				NotificationReader notification = new NotificationReader(aTextMessage);
+				handledNotifications.put(notification.notificationIdAsString(), aType);
+			}
+		}
 
-        @Override
-        protected String[] listensTo() {
-            return null; // receive all
-        }
+		@Override
+		protected String[] listensTo() {
+			return null; // receive all
+		}
 
-        @Override
-        protected String name() {
-            return this.getClass().getName();
-        }
-    }
+		@Override
+		protected String name() {
+			return this.getClass().getName();
+		}
+	}
 }
